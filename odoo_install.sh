@@ -1,43 +1,51 @@
 #!/bin/bash
 ################################################################################
-# Script for installing Odoo on Ubuntu 14.04, 15.04, 16.04 and 18.04 (could be used for other version too)
+# 最近更新：10.Nov, 2018
+# 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # Author: Yenthe Van Ginneken
+# Author: Ivan Deng,  http://www.sunpop.cn
 #-------------------------------------------------------------------------------
-# This script will install Odoo on your Ubuntu 16.04 server. It can install multiple Odoo instances
-# in one Ubuntu because of the different xmlrpc_ports
+# 本脚本将安装Odoo到你的服务器上，支持安装多个odoo进程在一台ubuntu上，使用不同的端口
 #-------------------------------------------------------------------------------
-# Make a new file:
-# sudo nano odoo-install.sh
-# Place this content in it and then make the file executable:
-# sudo chmod +x odoo-install.sh
-# Execute the script to install Odoo:
-# ./odoo-install
+# 使用方法1，直接在主机上执行
+# wget https://sunpop.cn/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
+# 使用方法，在主机上新建一个文件
+# sudo nano odoo_install.sh
+# 将本文中内容拷贝至该文件同时设置为可执行:
+# sudo chmod +x odoo_install.sh
+# 执行一键安装脚本
+# bash ./odoo_install_12.sh 2>&1 | tee odoo.log
+#-------------------------------------------------------------------------------
+# 本脚本执行完成后，您将得到
+#-------------------------------------------------------------------------------
+# 1. postgres 10 安装在
+# 2. odoo 最新版 安装在
+# 3. odoo 配置文件位于
+# 3. odoo访问地址为
 ################################################################################
 
 OE_USER="odoo"
 OE_HOME="/$OE_USER"
 OE_HOME_EXT="/$OE_USER/${OE_USER}-server"
-# The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
-# Set to true if you want to install it, false if you don't need it or have it already installed.
+# 安装 WKHTMLTOPDF，默认设置为 True ，如果已安装则设置为 False.
 INSTALL_WKHTMLTOPDF="True"
-# Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
+# 默认 odoo 端口 8069，建议安装 nginx 做前端端口映射，这样才能使用 livechat
 OE_PORT="8069"
-# Choose the Odoo version which you want to install. For example: 12.0, 11.0, 10.0 or saas-18. When using 'master' the master version will be installed.
-# IMPORTANT! This script contains extra libraries that are specifically needed for Odoo 12.0
+# 选择要安装的odoo版本，如: 12.0, 11.0, 10.0 或者 saas-18. 如果使用 'master' 则 master 分支将会安装
 OE_VERSION="12.0"
-# Set this to True if you want to install the Odoo enterprise version!
+# 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
-# set the superadmin password
+# 设置超管的用户名及密码
 OE_SUPERADMIN="admin"
-OE_CONFIG="${OE_USER}-server"
+# 设置 odoo 配置文件名
+OE_CONFIG="${OE_USER}"
 
-##
-###  WKHTMLTOPDF download links
+###  WKHTMLTOPDF 下载链接，将使用 sunpop.cn 的cdn下载以加快速度，注意主机版本及 WKHTMLTOPDF的版本
 ## === Ubuntu Trusty x64 & x32 === (for other distributions please replace these two links,
 ## in order to have correct version of wkhtmltox installed, for a danger note refer to 
 ## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
-WKHTMLTOX_X64=https://downloads.wkhtmltopdf.org/0.12/0.12.1/wkhtmltox-0.12.1_linux-trusty-amd64.deb
-WKHTMLTOX_X32=https://downloads.wkhtmltopdf.org/0.12/0.12.1/wkhtmltox-0.12.1_linux-trusty-i386.deb
+WKHTMLTOX_X64=http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-amd64.deb
+WKHTMLTOX_X32=http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.deb
 
 #--------------------------------------------------
 # Update Server
