@@ -1,5 +1,5 @@
 #!/bin/bash
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/bin/dpkg:/bin/pwd:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 clear;
 
@@ -14,13 +14,13 @@ CopyrightLogo='
 #-------------------------------------------------------------------------------
 # 使用方法1，直接在主机上执行以下指令
 # wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
-# 然后选择要安装的类型，1为从odoo官网安装，2为安装本地社区版，3为安装本地企业版，
+# 然后选择要安装的类型，1为从odoo官网安装，2为安装本地社区版，3为安装本地企业版(请联系购买)
 # 选择2时请确保 odoo_12.0.latest_all.deb 已上传至当前目录
 # 选择3时请确保 odoo_12.0+e.latest_all.deb 已上传至当前目录
 #-------------------------------------------------------------------------------
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
-# 1. 中文字体，PDF报表，时间同步处理时区问题，SCSS编译等odoo支持组件
+# 1. 自动安装中文字体，PDF报表，时间同步处理时区问题，SCSS编译等odoo支持组件
 # 2. postgres 10 安装在 /usr/lib/postgresql/10
 # 3. postgres 10 配置在 /etc/postgresql/10/main
 # 4. odoo12 最新版 安装在 /usr/lib/python3/dist-packages/odoo
@@ -34,12 +34,11 @@ CopyrightLogo='
 ## sudo aptitude remove  -y odoo
 ==========================================================================';
 echo "$CopyrightLogo";
-# remove old file
-rm odoo_*
-
 #--------------------------------------------------
 # 变量定义
 #--------------------------------------------------
+# 当前目录
+CURDIR=`/bin/pwd`
 O_USER="odoo"
 O_HOME="/usr/lib/python3/dist-packages/odoo"
 O_HOME_EXT="/$O_USER/${O_USER}-server"
@@ -101,6 +100,11 @@ function SetPassword()
 #--------------------------------------------------
 function InstallBase()
 {
+    # 删除旧文件
+    rm odoo_install*
+    rm odoo.log
+    rm wkhtmltox*
+
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
 
@@ -170,8 +174,9 @@ function InstallPg()    {
     sudo apt-get update
     sudo apt-get install postgresql-10 -y
 
-    echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
-    sudo su - postgres -c "createuser -s $O_USER" 2> /dev/null || true
+    # odoo12安装会自动创建用户，故无须操作以下
+    # echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
+    # sudo su - postgres -c "createuser -s $O_USER" 2> /dev/null || true
 }
 
 #--------------------------------------------------
@@ -180,23 +185,23 @@ function InstallPg()    {
 function InstallOdoo()    {
     echo -e "\n==== Installing ODOO Server $O_TYPE===="
     if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST
+        sudo wget $O_COMMUNITY_LATEST -O odoo_12.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
     fi;
     if [ "$O_TYPE" == 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' ]; then
-        sudo dpkg -i odoo_12.0.latest_all.deb;sudo apt-get -f -y install
+        sudo dpkg -i $CURDIR/odoo_12.0.latest_all.deb;sudo apt-get -f -y install
     fi;
     if [ "$O_TYPE" == 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' ]; then
-        sudo dpkg -i odoo_12.0+e.latest_all.deb;sudo apt-get -f -y install
+        sudo dpkg -i $CURDIR/odoo_12.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
 }
 #--------------------------------------------------
 # 设置重启脚本，完成安装
 #--------------------------------------------------
 function InstallDone()    {
-    sudo touch /root/r.sh
-    sudo sh -c 'echo "#!/usr/bin/env bash" > /root/r.sh'
-    sudo sh -c 'echo "sudo systemctl restart postgresql.service && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> /root/r.sh'
+    sudo touch $CURDIR/r.sh
+    sudo sh -c 'echo "#!/usr/bin/env bash" > $CURDIR/r.sh'
+    sudo sh -c 'echo "sudo systemctl restart postgresql.service && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> $CURDIR/r.sh'
     chmod +x r.sh
 
     echo -e "* Odoo 12 Server Install Done"
