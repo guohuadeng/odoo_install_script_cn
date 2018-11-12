@@ -27,13 +27,11 @@ CopyrightLogo='
 # 5. odoo12 配置文件位于 /etc/odoo/odoo.conf
 # 6. odoo12 访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
 # 7. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
-# todo: 选择社区版 or 企业版，可前期初始化管理密码
 #-------------------------------------------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
 #-------------------------------------------------------------------------------
 ## sudo aptitude remove  -y postgresql-10
 ## sudo aptitude remove  -y odoo
-```
 ==========================================================================';
 echo "$CopyrightLogo";
 # remove old file
