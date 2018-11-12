@@ -10,23 +10,25 @@ CopyrightLogo='
 # 作者: Ivan Deng
 # 支持: http://www.sunpop.cn
 #-------------------------------------------------------------------------------
-# 本脚本将安装Odoo到你的服务器上
+# 本脚本将安装Odoo到你的服务器上，一般而言，整个过程在3~5分钟完成
 #-------------------------------------------------------------------------------
-# 使用方法1，直接在主机上执行
-# wget https://sunpop.cn/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
+# 使用方法1，直接在主机上执行以下指令
+# wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
 #-------------------------------------------------------------------------------
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
-# 1. 中文字体，PDF报表，时间同步，SAAS编译等odoo支持组件
+# 1. 中文字体，PDF报表，时间同步，SCSS编译等odoo支持组件
 # 2. postgres 10 安装在 /usr/lib/postgresql/10
 # 3. postgres 10 配置在 /etc/postgresql/10/main
-# 4. odoo 最新版 安装在 /usr/lib/python3/dist-packages/odoo
-# 5. odoo 配置文件位于 /etc/odoo/odoo.conf
-# 6. odoo访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
+# 4. odoo12 最新版 安装在 /usr/lib/python3/dist-packages/odoo
+# 5. odoo12 配置文件位于 /etc/odoo/odoo.conf
+# 6. odoo12 访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
 # 7. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
 # todo: 选择社区版 or 企业版，可前期初始化管理密码
 ==========================================================================';
 echo "$CopyrightLogo";
+# remove old file
+rm odoo_*
 
 #--------------------------------------------------
 # 变量定义
@@ -71,10 +73,13 @@ WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.
 #--------------------------------------------------
 # 安装 PostgreSQL Server 10.0
 #--------------------------------------------------
-echo -e "\n---- Install PostgreSQL 10 Server ----"
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenialc-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-sudo apt-get install wget ca-scertificates
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+echo -e "\n---- Prepare Install PostgreSQL 10 Server ----"
+sudo apt-get install curl ca-certificates
+sudo apt-get install -y wget ca-certificates
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+echo -e "\n---- Installing PostgreSQL 10 Server ----"
 sudo apt-get update
 sudo apt-get install postgresql-10 -y
 
