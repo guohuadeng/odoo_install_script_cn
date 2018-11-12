@@ -14,7 +14,9 @@ CopyrightLogo='
 #-------------------------------------------------------------------------------
 # 使用方法1，直接在主机上执行以下指令
 # wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
-# 然后选择要安装的类型，1为从odoo官网安装，2为安装本地社区版，3为安装本地企业版，选择2和3时请确保已上传相关文件包至当前目录
+# 然后选择要安装的类型，1为从odoo官网安装，2为安装本地社区版，3为安装本地企业版，
+# 选择2时请确保 odoo_12.0.latest_all.deb 已上传至当前目录
+# 选择3时请确保 odoo_12.0+e.latest_all.deb 已上传至当前目录
 #-------------------------------------------------------------------------------
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
@@ -26,6 +28,12 @@ CopyrightLogo='
 # 6. odoo12 访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
 # 7. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
 # todo: 选择社区版 or 企业版，可前期初始化管理密码
+#-------------------------------------------------------------------------------
+# 如遇问题，可卸载 pg 及 odoo，重新安装
+#-------------------------------------------------------------------------------
+## sudo aptitude remove  -y postgresql-10
+## sudo aptitude remove  -y odoo
+```
 ==========================================================================';
 echo "$CopyrightLogo";
 # remove old file
@@ -77,7 +85,7 @@ WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.
 function ConfirmInstall()
 {
 	echo -e "[Notice] Confirm Install - odoo 12 \nPlease select your odoo version: (1~4)"
-	select selected in 'Odoo 12 Community from odoo.com' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb]' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb]' 'Exit'; do break; done;
+	select selected in 'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' 'Exit'; do break; done;
 	[ "$selected" == 'Exit' ] && echo 'Exit Install.' && exit;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmInstall;
@@ -133,8 +141,9 @@ function InstallBase()
     apt install -y unzip
     sudo apt-get install -y ttf-wqy-* && sudo apt-get install ttf-wqy-zenhei && sudo apt-get install ttf-wqy-microhei && apt-get install -y language-pack-zh-hant language-pack-zh-hans
     sudo chmod 0755 /usr/share/fonts/truetype/wqy && sudo chmod 0755 /usr/share/fonts/truetype/wqy/*
+    rm -rf /usr/share/fonts/truetype/microsoft
     mkdir /usr/share/fonts/truetype/microsoft
-    sudo wget $O_FONT -O /usr/share/fonts/truetype/microsoft/microsoft.zip
+    sudo wget -x -q $O_FONT -O /usr/share/fonts/truetype/microsoft/microsoft.zip
     unzip -q -d /usr/share/fonts/truetype/microsoft /usr/share/fonts/truetype/microsoft/microsoft.zip
     rm /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo chmod 0755 /usr/share/fonts/truetype/microsoft && sudo chmod 0755 /usr/share/fonts/truetype/microsoft/*
@@ -171,15 +180,15 @@ function InstallPg()    {
 # 安装odoo
 #--------------------------------------------------
 function InstallOdoo()    {
-    echo -e "\n==== Installing ODOO Server ===="
-    if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com [C Remote]' ]; then
+    echo -e "\n==== Installing ODOO Server $O_TYPE===="
+    if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
     fi;
-    if [ "$O_TYPE" == 'Odoo 12 Community from local[odoo_12.0.latest_all.deb]' ]; then
+    if [ "$O_TYPE" == 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' ]; then
         sudo dpkg -i odoo_12.0.latest_all.deb;sudo apt-get -f -y install
     fi;
-    if [ "$O_TYPE" == 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb]' ]; then
+    if [ "$O_TYPE" == 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i odoo_12.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
 }
