@@ -11,6 +11,7 @@ CopyrightLogo='
 # 支持: http://www.sunpop.cn
 #-------------------------------------------------------------------------------
 # 本脚本将安装Odoo到你的服务器上，一般而言，整个过程在3~5分钟完成
+# 为使中文设置生效，建议重启一下机器。 执行 reboot
 #-------------------------------------------------------------------------------
 # 使用方法1，直接在主机上执行以下指令
 # wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
@@ -212,6 +213,7 @@ function InstallDone()    {
     echo "Code location: /usr/lib/python3/dist-packages/odoo"
     echo "Restart Odoo service: sudo service $O_CONFIG restart"
     echo "Or: sudo bash /root/r.sh"
+    echo "Please reboot the server to make chinese setting effective."
     echo "Please visit our website to get more detail."
     echo "http://www.sunpop.cn"
     echo "-----------------------------------------------------------"
