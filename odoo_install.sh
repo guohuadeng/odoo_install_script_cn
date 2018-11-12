@@ -1,15 +1,15 @@
 #!/bin/bash
 ################################################################################
-# 最近更新：10.Nov, 2018
+# 最近更新：2018-11-12
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
-# Author: Yenthe Van Ginneken
-# Author: Ivan Deng,  http://www.sunpop.cn
+# Author: Yenthe Van Ginneken，https://github.com/Yenthe666/InstallScript
+# Author: Ivan Deng，http://www.sunpop.cn
 #-------------------------------------------------------------------------------
 # 本脚本将安装Odoo到你的服务器上，支持安装多个odoo进程在一台ubuntu上，使用不同的端口
 #-------------------------------------------------------------------------------
 # 使用方法1，直接在主机上执行
 # wget https://sunpop.cn/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
-# 使用方法，在主机上新建一个文件
+# 使用方法2，在主机上新建一个文件
 # sudo nano odoo_install.sh
 # 将本文中内容拷贝至该文件同时设置为可执行:
 # sudo chmod +x odoo_install.sh
@@ -18,27 +18,28 @@
 #-------------------------------------------------------------------------------
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
-# 1. postgres 10 安装在
-# 2. odoo 最新版 安装在
-# 3. odoo 配置文件位于
-# 3. odoo访问地址为
+# 1. Ubuntu 服务器更新至最新补丁
+# 2. postgres 10 安装在
+# 3. odoo 最新版 安装在
+# 4. odoo 配置文件位于
+# 5. odoo访问地址为
 ################################################################################
 
-OE_USER="odoo"
-OE_HOME="/$OE_USER"
-OE_HOME_EXT="/$OE_USER/${OE_USER}-server"
+O_USER="odoo"
+O_HOME="/$O_USER"
+O_HOME_EXT="/$O_USER/${O_USER}-server"
 # 安装 WKHTMLTOPDF，默认设置为 True ，如果已安装则设置为 False.
 INSTALL_WKHTMLTOPDF="True"
 # 默认 odoo 端口 8069，建议安装 nginx 做前端端口映射，这样才能使用 livechat
-OE_PORT="8069"
+O_PORT="8069"
 # 选择要安装的odoo版本，如: 12.0, 11.0, 10.0 或者 saas-18. 如果使用 'master' 则 master 分支将会安装
-OE_VERSION="12.0"
+O_VERSION="12.0"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 设置超管的用户名及密码
-OE_SUPERADMIN="admin"
+O_SUPERADMIN="admin"
 # 设置 odoo 配置文件名
-OE_CONFIG="${OE_USER}"
+O_CONFIG="${O_USER}"
 
 ###  WKHTMLTOPDF 下载链接，将使用 sunpop.cn 的cdn下载以加快速度，注意主机版本及 WKHTMLTOPDF的版本
 ## === Ubuntu Trusty x64 & x32 === (for other distributions please replace these two links,
@@ -48,25 +49,34 @@ WKHTMLTOX_X64=http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-amd64.
 WKHTMLTOX_X32=http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.deb
 
 #--------------------------------------------------
-# Update Server
+# 更新服务器，多数要人工干预，故可以注释
 #--------------------------------------------------
 echo -e "\n---- Update Server ----"
+# 升级服务器到 ubuntu 18，不需要可以注释
 # universe package is for Ubuntu 18.x
+apt install update-manager
+apt-get update && sudo apt-get dist-upgrade
+do-release-upgrade -d -m server -q
 sudo add-apt-repository universe
 sudo apt-get update
 sudo apt-get upgrade -y
+# end 升级 ubuntu 18
 
 #--------------------------------------------------
-# Install PostgreSQL Server
+# 安装 PostgreSQL Server 10.0
 #--------------------------------------------------
-echo -e "\n---- Install PostgreSQL Server ----"
-sudo apt-get install postgresql -y
+echo -e "\n---- Install PostgreSQL 10 Server ----"
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenialc-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt-get install wget ca-scertificates
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+sudo apt-get update
+sudo apt-get install postgresql-10 -y
 
 echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
-sudo su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
+sudo su - postgres -c "createuser -s $O_USER" 2> /dev/null || true
 
 #--------------------------------------------------
-# Install Dependencies
+# 安装依赖，源码安装时需要，用deb可以省
 #--------------------------------------------------
 echo -e "\n--- Installing Python 3 + pip3 --"
 sudo apt-get install python3 python3-pip -y
@@ -109,28 +119,28 @@ else
 fi
 
 echo -e "\n---- Create ODOO system user ----"
-sudo adduser --system --quiet --shell=/bin/bash --home=$OE_HOME --gecos 'ODOO' --group $OE_USER
+sudo adduser --system --quiet --shell=/bin/bash --home=$O_HOME --gecos 'ODOO' --group $O_USER
 #The user should also be added to the sudo'ers group.
-sudo adduser $OE_USER sudo
+sudo adduser $O_USER sudo
 
 echo -e "\n---- Create Log directory ----"
-sudo mkdir /var/log/$OE_USER
-sudo chown $OE_USER:$OE_USER /var/log/$OE_USER
+sudo mkdir /var/log/$O_USER
+sudo chown $O_USER:$O_USER /var/log/$O_USER
 
 #--------------------------------------------------
 # Install ODOO
 #--------------------------------------------------
 echo -e "\n==== Installing ODOO Server ===="
-sudo git clone --depth 1 --branch $OE_VERSION https://www.github.com/odoo/odoo $OE_HOME_EXT/
+sudo git clone --depth 1 --branch $O_VERSION https://www.github.com/odoo/odoo $O_HOME_EXT/
 
 if [ $IS_ENTERPRISE = "True" ]; then
     # Odoo Enterprise install!
     echo -e "\n--- Create symlink for node"
     sudo ln -s /usr/bin/nodejs /usr/bin/node
-    sudo su $OE_USER -c "mkdir $OE_HOME/enterprise"
-    sudo su $OE_USER -c "mkdir $OE_HOME/enterprise/addons"
+    sudo su $O_USER -c "mkdir $O_HOME/enterprise"
+    sudo su $O_USER -c "mkdir $O_HOME/enterprise/addons"
 
-    GITHUB_RESPONSE=$(sudo git clone --depth 1 --branch $OE_VERSION https://www.github.com/odoo/enterprise "$OE_HOME/enterprise/addons" 2>&1)
+    GITHUB_RESPONSE=$(sudo git clone --depth 1 --branch $O_VERSION https://www.github.com/odoo/enterprise "$O_HOME/enterprise/addons" 2>&1)
     while [[ $GITHUB_RESPONSE == *"Authentication"* ]]; do
         echo "------------------------WARNING------------------------------"
         echo "Your authentication with Github has failed! Please try again."
@@ -138,10 +148,10 @@ if [ $IS_ENTERPRISE = "True" ]; then
         echo "TIP: Press ctrl+c to stop this script."
         echo "-------------------------------------------------------------"
         echo " "
-        GITHUB_RESPONSE=$(sudo git clone --depth 1 --branch $OE_VERSION https://www.github.com/odoo/enterprise "$OE_HOME/enterprise/addons" 2>&1)
+        GITHUB_RESPONSE=$(sudo git clone --depth 1 --branch $O_VERSION https://www.github.com/odoo/enterprise "$O_HOME/enterprise/addons" 2>&1)
     done
 
-    echo -e "\n---- Added Enterprise code under $OE_HOME/enterprise/addons ----"
+    echo -e "\n---- Added Enterprise code under $O_HOME/enterprise/addons ----"
     echo -e "\n---- Installing Enterprise specific libraries ----"
     sudo pip3 install num2words ofxparse
     sudo apt-get install nodejs npm
@@ -150,42 +160,42 @@ if [ $IS_ENTERPRISE = "True" ]; then
 fi
 
 echo -e "\n---- Create custom module directory ----"
-sudo su $OE_USER -c "mkdir $OE_HOME/custom"
-sudo su $OE_USER -c "mkdir $OE_HOME/custom/addons"
+sudo su $O_USER -c "mkdir $O_HOME/custom"
+sudo su $O_USER -c "mkdir $O_HOME/custom/addons"
 
 echo -e "\n---- Setting permissions on home folder ----"
-sudo chown -R $OE_USER:$OE_USER $OE_HOME/*
+sudo chown -R $O_USER:$O_USER $O_HOME/*
 
 echo -e "* Create server config file"
 
-sudo touch /etc/${OE_CONFIG}.conf
+sudo touch /etc/${O_CONFIG}.conf
 echo -e "* Creating server config file"
-sudo su root -c "printf '[options] \n; This is the password that allows database operations:\n' >> /etc/${OE_CONFIG}.conf"
-sudo su root -c "printf 'admin_passwd = ${OE_SUPERADMIN}\n' >> /etc/${OE_CONFIG}.conf"
-sudo su root -c "printf 'xmlrpc_port = ${OE_PORT}\n' >> /etc/${OE_CONFIG}.conf"
-sudo su root -c "printf 'logfile = /var/log/${OE_USER}/${OE_CONFIG}.log\n' >> /etc/${OE_CONFIG}.conf"
+sudo su root -c "printf '[options] \n; This is the password that allows database operations:\n' >> /etc/${O_CONFIG}.conf"
+sudo su root -c "printf 'admin_passwd = ${O_SUPERADMIN}\n' >> /etc/${O_CONFIG}.conf"
+sudo su root -c "printf 'xmlrpc_port = ${O_PORT}\n' >> /etc/${O_CONFIG}.conf"
+sudo su root -c "printf 'logfile = /var/log/${O_USER}/${O_CONFIG}.log\n' >> /etc/${O_CONFIG}.conf"
 if [ $IS_ENTERPRISE = "True" ]; then
-    sudo su root -c "printf 'addons_path=${OE_HOME}/enterprise/addons,${OE_HOME_EXT}/addons\n' >> /etc/${OE_CONFIG}.conf"
+    sudo su root -c "printf 'addons_path=${O_HOME}/enterprise/addons,${O_HOME_EXT}/addons\n' >> /etc/${O_CONFIG}.conf"
 else
-    sudo su root -c "printf 'addons_path=${OE_HOME_EXT}/addons,${OE_HOME}/custom/addons\n' >> /etc/${OE_CONFIG}.conf"
+    sudo su root -c "printf 'addons_path=${O_HOME_EXT}/addons,${O_HOME}/custom/addons\n' >> /etc/${O_CONFIG}.conf"
 fi
-sudo chown $OE_USER:$OE_USER /etc/${OE_CONFIG}.conf
-sudo chmod 640 /etc/${OE_CONFIG}.conf
+sudo chown $O_USER:$O_USER /etc/${O_CONFIG}.conf
+sudo chmod 640 /etc/${O_CONFIG}.conf
 
 echo -e "* Create startup file"
-sudo su root -c "echo '#!/bin/sh' >> $OE_HOME_EXT/start.sh"
-sudo su root -c "echo 'sudo -u $OE_USER $OE_HOME_EXT/openerp-server --config=/etc/${OE_CONFIG}.conf' >> $OE_HOME_EXT/start.sh"
-sudo chmod 755 $OE_HOME_EXT/start.sh
+sudo su root -c "echo '#!/bin/sh' >> $O_HOME_EXT/start.sh"
+sudo su root -c "echo 'sudo -u $O_USER $O_HOME_EXT/openerp-server --config=/etc/${O_CONFIG}.conf' >> $O_HOME_EXT/start.sh"
+sudo chmod 755 $O_HOME_EXT/start.sh
 
 #--------------------------------------------------
 # Adding ODOO as a deamon (initscript)
 #--------------------------------------------------
 
 echo -e "* Create init file"
-cat <<EOF > ~/$OE_CONFIG
+cat <<EOF > ~/$O_CONFIG
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides: $OE_CONFIG
+# Provides: $O_CONFIG
 # Required-Start: \$remote_fs \$syslog
 # Required-Stop: \$remote_fs \$syslog
 # Should-Start: \$network
@@ -196,13 +206,13 @@ cat <<EOF > ~/$OE_CONFIG
 # Description: ODOO Business Applications
 ### END INIT INFO
 PATH=/bin:/sbin:/usr/bin
-DAEMON=$OE_HOME_EXT/odoo-bin
-NAME=$OE_CONFIG
-DESC=$OE_CONFIG
+DAEMON=$O_HOME_EXT/odoo-bin
+NAME=$O_CONFIG
+DESC=$O_CONFIG
 # Specify the user name (Default: odoo).
-USER=$OE_USER
+USER=$O_USER
 # Specify an alternate config file (Default: /etc/openerp-server.conf).
-CONFIGFILE="/etc/${OE_CONFIG}.conf"
+CONFIGFILE="/etc/${O_CONFIG}.conf"
 # pidfile
 PIDFILE=/var/run/\${NAME}.pid
 # Additional options that are passed to the Daemon.
@@ -249,23 +259,23 @@ exit 0
 EOF
 
 echo -e "* Security Init File"
-sudo mv ~/$OE_CONFIG /etc/init.d/$OE_CONFIG
-sudo chmod 755 /etc/init.d/$OE_CONFIG
-sudo chown root: /etc/init.d/$OE_CONFIG
+sudo mv ~/$O_CONFIG /etc/init.d/$O_CONFIG
+sudo chmod 755 /etc/init.d/$O_CONFIG
+sudo chown root: /etc/init.d/$O_CONFIG
 
 echo -e "* Start ODOO on Startup"
-sudo update-rc.d $OE_CONFIG defaults
+sudo update-rc.d $O_CONFIG defaults
 
 echo -e "* Starting Odoo Service"
-sudo su root -c "/etc/init.d/$OE_CONFIG start"
+sudo su root -c "/etc/init.d/$O_CONFIG start"
 echo "-----------------------------------------------------------"
 echo "Done! The Odoo server is up and running. Specifications:"
-echo "Port: $OE_PORT"
-echo "User service: $OE_USER"
-echo "User PostgreSQL: $OE_USER"
-echo "Code location: $OE_USER"
-echo "Addons folder: $OE_USER/$OE_CONFIG/addons/"
-echo "Start Odoo service: sudo service $OE_CONFIG start"
-echo "Stop Odoo service: sudo service $OE_CONFIG stop"
-echo "Restart Odoo service: sudo service $OE_CONFIG restart"
+echo "Port: $O_PORT"
+echo "User service: $O_USER"
+echo "User PostgreSQL: $O_USER"
+echo "Code location: $O_USER"
+echo "Addons folder: $O_USER/$O_CONFIG/addons/"
+echo "Start Odoo service: sudo service $O_CONFIG start"
+echo "Stop Odoo service: sudo service $O_CONFIG stop"
+echo "Restart Odoo service: sudo service $O_CONFIG restart"
 echo "-----------------------------------------------------------"
