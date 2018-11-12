@@ -1,8 +1,8 @@
 # [Odoo](https://www.odoo.com "Odoo's Homepage") Install Script
 
 This script is based on the install script from
-André Schenkels (https://github.com/aschenkels-ictstudio/openerp-install-scripts)
-Yenthe666 https://github.com/Yenthe666/InstallScript
+** André Schenkels (https://github.com/aschenkels-ictstudio/openerp-install-scripts)
+** Yenthe666 https://github.com/Yenthe666/InstallScript
 
 # 使用方法，直接在主机上执行以下指令
 ```
