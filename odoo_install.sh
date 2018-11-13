@@ -50,10 +50,15 @@ O_FONT="http://cdn.sunpop.cn/download/microsoft.zip"
 # 默认 odoo 端口 8069，建议安装 nginx 做前端端口映射，这样才能使用 livechat
 O_PORT="8069"
 # 选择要安装的odoo版本，如: 12.0, 11.0, 10.0 或者 saas-18. 如果使用 'master' 则 master 分支将会安装
+O_TYPE=""
 O_VERSION="12.0"
 O_COMMUNITY_LATEST="http://nightly.odoocdn.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
+# 选择要安装的pg版本
+O_PG=""
+# 选择是否要安装nginx，True安装，Fale不安装
+O_NGINX="False"
 # 设置超管的用户名及密码
 O_SUPERADMIN="admin"
 # 设置 odoo 配置文件名
@@ -80,13 +85,20 @@ WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.
 #--------------------------------------------------
 # 脚本：安装类型，设置密码
 #--------------------------------------------------
-function ConfirmInstall()
+function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 12 \nPlease select your odoo version: (1~4)"
 	select selected in 'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' 'Exit'; do break; done;
 	[ "$selected" == 'Exit' ] && echo 'Exit Install.' && exit;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
-	ConfirmInstall;
+	ConfirmOdoo;
+}
+function ConfirmPg()
+{
+	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
+	select selected in 'Postgresql 9.x [OS default. Good compatibility]' 'Postgresql 10 [Better Performance]'; do break; done;
+	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
+	ConfirmPg;
 }
 
 function SetPassword()
@@ -108,6 +120,7 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
+    pip3 install  num2words
 
     echo -e "\n---- Install tool packages ----"
     sudo apt-get install wget git bzr python-pip gdebi-core -y
@@ -164,27 +177,30 @@ function InstallBase()
 # 安装 PostgreSQL Server 10.0
 #--------------------------------------------------
 function InstallPg()    {
-    echo -e "\n---- Prepare Install PostgreSQL 10 Server ----"
-    sudo apt-get install curl ca-certificates -y
-    sudo apt-get install -y wget ca-certificates
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+    echo -e "\n---- Prepare Install $O_PG ----"
 
-    echo -e "\n---- Installing PostgreSQL 10 Server ----"
-    sudo apt-key update
-    sudo apt-get update
-    sudo apt-get install postgresql-10 -y
+    if [ "$O_PG" == 'Postgresql 9.x [OS default. Good compatibility]' ]; then
+        sudo apt-get install postgresql -y
+    fi;
 
-    # odoo12安装会自动创建用户，故无须操作以下
-    # echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
-    # sudo su - postgres -c "createuser -s $O_USER" 2> /dev/null || true
+    if [ "$O_PG" == 'Postgresql 10 [Better Performance' ]; then
+        sudo apt-get install curl ca-certificates -y
+        sudo apt-get install -y wget ca-certificates
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+        echo -e "\n---- Installing PostgreSQL 10 Server ----"
+        sudo apt-key update
+        sudo apt-get update
+        sudo apt-get install postgresql-10 -y
+    fi;
 }
 
 #--------------------------------------------------
 # 安装odoo
 #--------------------------------------------------
 function InstallOdoo()    {
-    echo -e "\n==== Installing ODOO Server $O_TYPE===="
+    echo -e "\n==== Installing $O_TYPE===="
     if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST -O odoo_12.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
@@ -222,7 +238,8 @@ function InstallDone()    {
 #--------------------------------------------------
 # 执行安装
 #--------------------------------------------------
-ConfirmInstall;
+ConfirmOdoo;
+ConfirmPg;
 InstallBase;
 InstallPg;
 InstallOdoo;
