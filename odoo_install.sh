@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2018-11-12
+# 最近更新：2018-11-14
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # 作者: Ivan Deng
 # 支持: http://www.sunpop.cn
@@ -13,20 +13,27 @@ CopyrightLogo='
 # 本脚本将安装Odoo到你的服务器上，一般而言，整个过程在3~5分钟完成
 # 为使中文设置生效，建议重启一下机器。 执行 reboot
 #-------------------------------------------------------------------------------
-# 使用方法1，直接在主机上执行以下指令
+# 使用方法，直接在主机上执行以下指令
 # wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
-# 然后选择要安装的类型，1为从odoo官网安装，2为安装本地社区版，3为安装本地企业版(请联系购买)
+# (1) 选择要安装的类型
+# 1为从odoo官网安装odoo12，2为安装本地社区版odoo12，3为安装本地企业版odoo12(请联系购买)
+# 4为从odoo官网安装odoo11，5为安装本地社区版odoo11，6为安装本地企业版odoo11(请联系购买)
 # 选择2时请确保 odoo_12.0.latest_all.deb 已上传至当前目录
 # 选择3时请确保 odoo_12.0+e.latest_all.deb 已上传至当前目录
+# 选择5时请确保 odoo_11.0.latest_all.deb 已上传至当前目录
+# 选择6时请确保 odoo_11.0+e.latest_all.deb 已上传至当前目录
+# (2) 选择要安装的Postgresql 数据库
+# 选择 PG9 版本将有更好兼容性，也可杜绝某些阿里云服务器无法访问最新 postgresql 官网源的问题
+# 选择PG10 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
 #-------------------------------------------------------------------------------
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
 # 1. 自动安装中文字体，PDF报表，时间同步处理时区问题，SCSS编译等odoo支持组件
 # 2. postgres 10 安装在 /usr/lib/postgresql/10
 # 3. postgres 10 配置在 /etc/postgresql/10/main
-# 4. odoo12 最新版 安装在 /usr/lib/python3/dist-packages/odoo
-# 5. odoo12 配置文件位于 /etc/odoo/odoo.conf
-# 6. odoo12 访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
+# 4. odoo 最新版 安装在 /usr/lib/python3/dist-packages/odoo
+# 5. odoo12/11 配置文件位于 /etc/odoo/odoo.conf
+# 6. odoo12/11 访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
 # 7. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
 #-------------------------------------------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
@@ -53,6 +60,7 @@ O_PORT="8069"
 O_TYPE=""
 O_VERSION="12.0"
 O_COMMUNITY_LATEST="http://nightly.odoocdn.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
+O_COMMUNITY_LATEST="http://nightly.odoocdn.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
@@ -88,7 +96,8 @@ WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.
 function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 12 \nPlease select your odoo version: (1~4)"
-	select selected in 'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' 'Exit'; do break; done;
+	select selected in 'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' 'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' 'Exit';
+	do break; done;
 	[ "$selected" == 'Exit' ] && echo 'Exit Install.' && exit;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmOdoo;
@@ -120,7 +129,7 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
-    pip3 install  num2words
+    pip3 install  num2words scss
 
     echo -e "\n---- Install tool packages ----"
     sudo apt-get install wget git bzr python-pip gdebi-core -y
@@ -211,6 +220,16 @@ function InstallOdoo()    {
     if [ "$O_TYPE" == 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_12.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
+    if [ "$O_TYPE" == 'Odoo 11 Community from odoo.com 远程社区版' ]; then
+        sudo wget $O_COMMUNITY_LATEST -O odoo_11.0.latest_all.deb
+        sudo gdebi --n `basename $O_COMMUNITY_LATEST_11`
+    fi;
+    if [ "$O_TYPE" == 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' ]; then
+        sudo dpkg -i $CURDIR/odoo_11.0.latest_all.deb;sudo apt-get -f -y install
+    fi;
+    if [ "$O_TYPE" == 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' ]; then
+        sudo dpkg -i $CURDIR/odoo_11.0+e.latest_all.deb;sudo apt-get -f -y install
+    fi;
 }
 #--------------------------------------------------
 # 设置重启脚本，完成安装
@@ -221,7 +240,7 @@ function InstallDone()    {
     sudo sh -c 'echo "sudo systemctl restart postgresql.service && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> $CURDIR/r.sh'
     chmod +x r.sh
 
-    echo -e "* Odoo 12 Server Install Done"
+    echo -e "* $O_TYPE Install Done"
     echo "The Odoo server is up and running. Specifications:"
     echo "Port: $O_PORT"
     echo "User service: $O_USER"
