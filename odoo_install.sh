@@ -15,6 +15,7 @@ CopyrightLogo='
 #-------------------------------------------------------------------------------
 # 使用方法，直接在主机上执行以下指令
 # wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
+#-------------------------------------------------------------------------------
 # (1) 选择要安装的类型
 # 1为从odoo官网安装odoo12，2为安装本地社区版odoo12，3为安装本地企业版odoo12(请联系购买)
 # 4为从odoo官网安装odoo11，5为安装本地社区版odoo11，6为安装本地企业版odoo11(请联系购买)
@@ -60,7 +61,7 @@ O_PORT="8069"
 O_TYPE=""
 O_VERSION="12.0"
 O_COMMUNITY_LATEST="http://nightly.odoocdn.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
-O_COMMUNITY_LATEST="http://nightly.odoocdn.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
+O_COMMUNITY_LATEST_11="http://nightly.odoocdn.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
@@ -221,7 +222,7 @@ function InstallOdoo()    {
         sudo dpkg -i $CURDIR/odoo_12.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
     if [ "$O_TYPE" == 'Odoo 11 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST -O odoo_11.0.latest_all.deb
+        sudo wget $O_COMMUNITY_LATEST_11 -O odoo_11.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST_11`
     fi;
     if [ "$O_TYPE" == 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' ]; then
