@@ -231,6 +231,16 @@ function InstallOdoo()    {
     if [ "$O_TYPE" == 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_11.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
+    # 设置个性化目录
+
+    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
+    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
+    sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
+    chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
+    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/odoofile
+    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
+    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/addons
+    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/myaddons
 }
 #--------------------------------------------------
 # 设置重启脚本，完成安装
