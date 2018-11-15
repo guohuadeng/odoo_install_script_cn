@@ -125,7 +125,6 @@ function InstallBase()
 {
     # 删除旧文件
     rm odoo_install*
-    rm odoo.log
     rm wkhtmltox*
 
     echo -e "\n--- Installing Python 3 + pip3 --"
