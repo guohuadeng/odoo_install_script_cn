@@ -192,7 +192,7 @@ function InstallPg()    {
         sudo apt-get install postgresql -y
     fi;
 
-    if [ "$O_PG" == 'Postgresql 10 [Better Performance' ]; then
+    if [ "$O_PG" == 'Postgresql 10 [Better Performance]' ]; then
         sudo apt-get install curl ca-certificates -y
         sudo apt-get install -y wget ca-certificates
         wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
