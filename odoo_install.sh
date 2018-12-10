@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2018-11-14
+# 最近更新：2018-12-11
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # 作者: Ivan Deng
 # 支持: http://www.sunpop.cn
@@ -129,7 +129,7 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
-    pip3 install  num2words scss libsass
+    pip3 install phonenumbers num2words scss libsass
 
     echo -e "\n---- Install tool packages ----"
     sudo apt-get install wget git bzr python-pip gdebi-core -y
