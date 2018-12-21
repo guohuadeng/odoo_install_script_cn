@@ -75,6 +75,8 @@ O_CONFIG="${O_USER}"
 # WKHTMLTOPDF 下载链接，将使用 sunpop.cn 的cdn下载以加快速度，注意主机版本及 WKHTMLTOPDF的版本
 WKHTMLTOX_X64="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-amd64.deb"
 WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.deb"
+# odoo.conf 下载链接，将使用 sunpop.cn的
+O_CONF_FILE="http://www.sunpop.cn/download/odoo.conf"
 
 #--------------------------------------------------
 # 更新服务器，多数要人工干预，故可以注释
@@ -129,16 +131,31 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
-    pip3 install phonenumbers num2words scss libsass
+    sudo pip3 install phonenumbers num2words scss libsass
 
     echo -e "\n---- Install tool packages ----"
-    sudo apt-get install wget git bzr python-pip gdebi-core -y
+    sudo apt-get install wget ntp git bzr python-pip gdebi-core -y
 
     echo -e "\n--- Install other required packages"
     sudo apt-get install node-clean-css -y
     sudo apt-get install node-less -y
     sudo apt-get install python-gevent -y
 
+    # 本地化
+    sudo apt install -y aptitude;sudo aptitude install -y locales
+    # 设置时区，默认先不设置，因为有时是境外主机
+    # sudo timedatectl set-timezone "Asia/Shanghai"
+    # sudo timedatectl set-timezone "America/New_York"
+    # 将你的硬件时钟设置为协调世界时（UTC）：
+    sudo timedatectl set-local-rtc 0
+    # 自动时间同步到远程NTP服务器，须卸载ntp
+    sudo apt-get remove ntp -y
+    sudo timedatectl set-ntp no
+    sudo apt-get install ntp -y
+    # 设置系统时间与网络时间同步
+    ntpdate cn.pool.ntp.org
+    # 将系统时间写入硬件时间
+    sudo hwclock --systohc
     #--------------------------------------------------
     # 安装 Wkhtmltopdf
     #--------------------------------------------------
@@ -162,18 +179,18 @@ function InstallBase()
     # 安装中文字体，装完后要重启
     #--------------------------------------------------
     sudo sh -c 'echo "LANG=\"zh_CN.UTF-8\"" > /etc/default/locale'
-    apt install -y xfonts-utils
-    apt install -y unzip
+    sudo apt install -y xfonts-utils
+    sudo apt install -y unzip
     sudo apt-get install -y ttf-wqy-* && sudo apt-get install ttf-wqy-zenhei && sudo apt-get install ttf-wqy-microhei && apt-get install -y language-pack-zh-hant language-pack-zh-hans
-    sudo chmod 0755 /usr/share/fonts/truetype/wqy && sudo chmod 0755 /usr/share/fonts/truetype/wqy/*
-    rm -rf /usr/share/fonts/truetype/microsoft
-    mkdir /usr/share/fonts/truetype/microsoft
+    sudo chmod -R 0755 /usr/share/fonts/truetype/wqy && sudo chmod -R 0755 /usr/share/fonts/truetype/wqy/*
+    sudo rm -rf /usr/share/fonts/truetype/microsoft
+    sudo mkdir /usr/share/fonts/truetype/microsoft
     sudo wget -x -q $O_FONT -O /usr/share/fonts/truetype/microsoft/microsoft.zip
-    unzip -q -d /usr/share/fonts/truetype/microsoft /usr/share/fonts/truetype/microsoft/microsoft.zip
-    rm /usr/share/fonts/truetype/microsoft/microsoft.zip
-    sudo chmod 0755 /usr/share/fonts/truetype/microsoft && sudo chmod 0755 /usr/share/fonts/truetype/microsoft/*
-    cd /usr/share/fonts/truetype/wqy && mkfontscale && mkfontdir && fc-cache -fv
-    cd /usr/share/fonts/truetype/microsoft && mkfontscale && mkfontdir && fc-cache -fv
+    sudo unzip -q -d /usr/share/fonts/truetype/microsoft /usr/share/fonts/truetype/microsoft/microsoft.zip
+    sudo rm /usr/share/fonts/truetype/microsoft/microsoft.zip
+    sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft && sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft/*
+    sudo cd /usr/share/fonts/truetype/wqy && mkfontscale && mkfontdir && fc-cache -fv
+    sudo cd /usr/share/fonts/truetype/microsoft && mkfontscale && mkfontdir && fc-cache -fv
 
     #--------------------------------------------------
     # cron 配置时间同步，必须要做，避免多数问题，最好停用本机ntpd服务器
@@ -195,7 +212,7 @@ function InstallPg()    {
     if [ "$O_PG" == 'Postgresql 10 [Better Performance]' ]; then
         sudo apt-get install curl ca-certificates -y
         sudo apt-get install -y wget ca-certificates
-        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+        sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
         sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
         echo -e "\n---- Installing PostgreSQL 10 Server ----"
@@ -230,16 +247,20 @@ function InstallOdoo()    {
     if [ "$O_TYPE" == 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_11.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
+    # 下载个性化配置文件，将odoo用户加至管理组（方便，如有更高安全要求可另行处理）
+    sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
+    sudo usermod -a -G root odoo
     # 设置个性化目录
-
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
     sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
-    chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
-    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/odoofile
-    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
-    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/addons
-    sudo chmod 755 /usr/lib/python3/dist-packages/odoo/myaddons
+    sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons/12.0
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/addons
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
 }
 #--------------------------------------------------
 # 设置重启脚本，完成安装
@@ -247,8 +268,9 @@ function InstallOdoo()    {
 function InstallDone()    {
     sudo touch $CURDIR/r.sh
     sudo sh -c 'echo "#!/usr/bin/env bash" > $CURDIR/r.sh'
-    sudo sh -c 'echo "sudo systemctl restart postgresql.service && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> $CURDIR/r.sh'
-    chmod +x r.sh
+    sudo sh -c 'echo "sudo systemctl restart postgresql && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> $CURDIR/r.sh'
+    sudo sh -c 'echo "sudo systemctl status postgresql && sudo systemctl status odoo" >> $CURDIR/r.sh'
+    sudo chmod +x r.sh
 
     echo -e "* $O_TYPE Install Done"
     echo "The Odoo server is up and running. Specifications:"
@@ -258,7 +280,7 @@ function InstallDone()    {
     echo "Code location: /usr/lib/python3/dist-packages/odoo"
     echo "Restart Odoo service: sudo service $O_CONFIG restart"
     echo "Or: sudo bash /root/r.sh"
-    echo "Please reboot the server to make chinese setting effective."
+    echo "Please Reboot the server to make chinese setting effective."
     echo "Please visit our website to get more detail."
     echo "http://www.sunpop.cn"
     echo "-----------------------------------------------------------"
