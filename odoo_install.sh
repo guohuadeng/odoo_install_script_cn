@@ -26,6 +26,8 @@ CopyrightLogo='
 # (2) 选择要安装的Postgresql 数据库
 # 选择 PG9 版本将有更好兼容性，也可杜绝某些阿里云服务器无法访问最新 postgresql 官网源的问题
 # 选择PG10 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
+# (3) 选择是否要安装Nginx
+# 安装Nginx则可直接使用80端口访问odoo，同时可使用网站即时通讯
 #-------------------------------------------------------------------------------
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
@@ -35,7 +37,8 @@ CopyrightLogo='
 # 4. odoo 最新版 安装在 /usr/lib/python3/dist-packages/odoo
 # 5. odoo12/11 配置文件位于 /etc/odoo/odoo.conf
 # 6. odoo12/11 访问地址为(用你的域名代替 yourserver.com) http://yourserver.com:8069
-# 7. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
+# 7. 配置好的Nginx，可直接使用域名访问odoo，可使用即时通讯 http://yourserver.com
+# 8. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
 #-------------------------------------------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
 #-------------------------------------------------------------------------------
@@ -77,6 +80,7 @@ WKHTMLTOX_X64="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-amd64
 WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.deb"
 # odoo.conf 下载链接，将使用 sunpop.cn的
 O_CONF_FILE="http://www.sunpop.cn/download/odoo.conf"
+O_NGINX_CONF_FILE="http://www.sunpop.cn/download/nginx.conf"
 
 #--------------------------------------------------
 # 更新服务器，多数要人工干预，故可以注释
@@ -96,6 +100,13 @@ O_CONF_FILE="http://www.sunpop.cn/download/odoo.conf"
 #--------------------------------------------------
 # 脚本：安装类型，设置密码
 #--------------------------------------------------
+function ConfirmPg()
+{
+	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
+	select selected in 'Postgresql 9.x [OS default. Good compatibility]' 'Postgresql 10 [Better Performance]'; do break; done;
+	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
+	ConfirmPg;
+}
 function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 12 \nPlease select your odoo version: (1~4)"
@@ -105,12 +116,12 @@ function ConfirmOdoo()
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmOdoo;
 }
-function ConfirmPg()
+function ConfirmNg()
 {
-	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
-	select selected in 'Postgresql 9.x [OS default. Good compatibility]' 'Postgresql 10 [Better Performance]'; do break; done;
-	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
-	ConfirmPg;
+	echo -e "[Notice] Confirm Install - Nginx for web forward: "
+	select selected in 'Nginx for Odoo in port 80[Yes]' 'Odoo standalone in port 8069[No]'; do break; done;
+	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_NGINX=$selected && return 0;
+	ConfirmNg;
 }
 
 function SetPassword()
@@ -263,6 +274,17 @@ function InstallOdoo()    {
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
 }
 #--------------------------------------------------
+# 安装 Nginx 作为 web 转发，启用 polling
+#--------------------------------------------------
+function InstallNg()    {
+    if [ "$O_NGINX" == 'Nginx for Odoo in port 80[Yes]' ]; then
+        echo -e "\n---- Prepare Install $O_NGINX ----"
+        sudo apt-get install -y nginx
+        sudo wget -x -q $O_NGINX_CONF_FILE -O /etc/nginx/nginx.conf; sudo nginx -s reload
+        echo -e "\n---- Nginx Done ----"
+    fi;
+}
+#--------------------------------------------------
 # 设置重启脚本，完成安装
 #--------------------------------------------------
 function InstallDone()    {
@@ -291,8 +313,10 @@ function InstallDone()    {
 #--------------------------------------------------
 ConfirmOdoo;
 ConfirmPg;
+ConfirmNg;
 InstallBase;
 InstallPg;
 InstallOdoo;
+InstallNg;
 InstallDone;
 #SetPassword;
