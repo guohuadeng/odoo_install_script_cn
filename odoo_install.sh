@@ -263,10 +263,12 @@ function InstallOdoo()    {
     sudo usermod -a -G root odoo
     # 设置个性化目录
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
+    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/filestore
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
     sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
     sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/filestore
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons/12.0
