@@ -58,7 +58,7 @@ O_HOME_EXT="/$O_USER/${O_USER}-server"
 # 安装 WKHTMLTOPDF，默认设置为 True ，如果已安装则设置为 False.
 INSTALL_WKHTMLTOPDF="True"
 # 中文字体相关
-O_FONT="http://cdn.sunpop.cn/download/microsoft.zip"
+O_FONT="https://www.sunpop.cn/download/microsoft.zip"
 # 默认 odoo 端口 8069，建议安装 nginx 做前端端口映射，这样才能使用 livechat
 O_PORT="8069"
 # 选择要安装的odoo版本，如: 12.0, 11.0, 10.0 或者 saas-18. 如果使用 'master' 则 master 分支将会安装
@@ -76,11 +76,11 @@ O_NGINX="False"
 O_SUPERADMIN="admin"
 # 设置 odoo 配置文件名
 O_CONFIG="${O_USER}"
-# WKHTMLTOPDF 下载链接，将使用 sunpop.cn 的cdn下载以加快速度，注意主机版本及 WKHTMLTOPDF的版本
-WKHTMLTOX_X64="http://cdn.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb"
-WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
+# WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
+WKHTMLTOX_X64="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb"
+WKHTMLTOX_X32="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
 # odoo.conf 下载链接，将使用 sunpop.cn的
-O_CONF_FILE="http://www.sunpop.cn/download/odoo.conf"
+O_CONF_FILE="https://www.sunpop.cn/download/odoo.conf"
 O_NGINX_CONF_FILE="http://www.sunpop.cn/download/nginx.conf"
 
 #--------------------------------------------------
