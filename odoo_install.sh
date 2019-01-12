@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2018-12-28
+# 最近更新：2019-1-12
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # 作者: Ivan Deng
 # 支持: http://www.sunpop.cn
@@ -39,6 +39,7 @@ CopyrightLogo='
 # 6. Nginx 作为反向代理，开启了多worker工作模式，可使用odoo在线即时通讯
 # 7. odoo访问地址为(用你的域名代替 yourserver.com) http://yourserver.com 或者http://yourserver.com:8069
 # 8. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
+# 9. 使用最新的pdf打印组件wkhtmltox 0.12.5 版本，打印更清晰
 #-------------------------------------------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
 #-------------------------------------------------------------------------------
@@ -76,8 +77,8 @@ O_SUPERADMIN="admin"
 # 设置 odoo 配置文件名
 O_CONFIG="${O_USER}"
 # WKHTMLTOPDF 下载链接，将使用 sunpop.cn 的cdn下载以加快速度，注意主机版本及 WKHTMLTOPDF的版本
-WKHTMLTOX_X64="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-amd64.deb"
-WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox-0.12.1_linux-trusty-i386.deb"
+WKHTMLTOX_X64="http://cdn.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb"
+WKHTMLTOX_X32="http://cdn.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
 # odoo.conf 下载链接，将使用 sunpop.cn的
 O_CONF_FILE="http://www.sunpop.cn/download/odoo.conf"
 O_NGINX_CONF_FILE="http://www.sunpop.cn/download/nginx.conf"
