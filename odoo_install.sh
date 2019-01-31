@@ -14,7 +14,7 @@ CopyrightLogo='
 # 为使中文设置生效，建议重启一下机器。 执行 reboot
 #-------------------------------------------------------------------------------
 # 使用方法，直接在主机上执行以下指令
-# wget https://sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
+# wget https://www.sunpop.cn/download/odoo_install.sh && bash odoo_install.sh 2>&1 | tee odoo.log
 #-------------------------------------------------------------------------------
 # (1) 选择要安装的类型
 # 1为从odoo官网安装odoo12，2为安装本地社区版odoo12，3为安装本地企业版odoo12(请联系购买)
