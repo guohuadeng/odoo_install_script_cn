@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2019-1-12
+# 最近更新：2019-03-05
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # 作者: Ivan Deng
 # 支持: http://www.sunpop.cn
@@ -52,6 +52,9 @@ echo "$CopyrightLogo";
 #--------------------------------------------------
 # 当前目录
 CURDIR=`/bin/pwd`
+# Ubuntu的版本号
+U_Version=$(lsb_release -r --short)
+U_Version=${U_Version:0:2}
 O_USER="odoo"
 O_HOME="/usr/lib/python3/dist-packages/odoo"
 O_HOME_EXT="/$O_USER/${O_USER}-server"
@@ -79,6 +82,9 @@ O_CONFIG="${O_USER}"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
 WKHTMLTOX_X64="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb"
 WKHTMLTOX_X32="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
+# LibPng处理，主要是 U18的bug
+LIBPNG_X64="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
+LIBPNG_X32="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
 # odoo.conf 下载链接，将使用 sunpop.cn的
 O_CONF_FILE="https://www.sunpop.cn/download/odoo.conf"
 O_NGINX_CONF_FILE="http://www.sunpop.cn/download/nginx.conf"
@@ -137,21 +143,29 @@ function SetPassword()
 #--------------------------------------------------
 function InstallBase()
 {
-    # 删除旧文件
+    # 删除旧文件，更新源
     rm odoo_install*
     rm wkhtmltox*
+    sudo apt-get update
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
     sudo pip3 install phonenumbers num2words scss libsass
 
     echo -e "\n---- Install tool packages ----"
-    sudo apt-get install wget ntp git bzr python-pip gdebi-core -y
+    # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
+    sudo apt-get install wget sntp -y
+    sudo apt-get install wget git -y
+    sudo apt-get install wget bzr -y
+    sudo apt-get install wget python-pip -y
+    sudo apt-get install wget gdebi-core -y
 
     echo -e "\n--- Install other required packages"
     sudo apt-get install node-clean-css -y
     sudo apt-get install node-less -y
     sudo apt-get install python-gevent -y
+
+    sudo apt-get install libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libpq-dev libpng-dev libjpeg-dev xz-utils -y
 
     # 本地化
     sudo apt install -y aptitude;sudo aptitude install -y locales
@@ -163,11 +177,29 @@ function InstallBase()
     # 自动时间同步到远程NTP服务器，须卸载ntp
     sudo apt-get remove ntp -y
     sudo timedatectl set-ntp no
-    sudo apt-get install ntp -y
+    sudo apt-get install ntpdate -y
     # 设置系统时间与网络时间同步
     ntpdate cn.pool.ntp.org
     # 将系统时间写入硬件时间
     sudo hwclock --systohc
+    #--------------------------------------------------
+    # 在 u18里要增加下载内容
+    #--------------------------------------------------
+    if [ $U_Version = "18" ]; then
+      echo -e "\n--- Install extra for ubuntu 18"
+      #pick up correct one from x64 & x32 versions:
+      if [ "`getconf LONG_BIT`" == "64" ];then
+          _url=$LIBPNG_X64
+      else
+          _url=$LIBPNG_X32
+      fi
+      sudo wget $_url
+      sudo gdebi --n `basename $_url`
+      sudo ln -s /usr/local/bin/wkhtmltopdf /usr/bin
+      sudo ln -s /usr/local/bin/wkhtmltoimage /usr/bin
+      echo "libpng-12 is installed."
+    fi
+
     #--------------------------------------------------
     # 安装 Wkhtmltopdf
     #--------------------------------------------------
