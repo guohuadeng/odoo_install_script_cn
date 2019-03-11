@@ -5,8 +5,9 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2019-03-05
+# 最近更新：2019-03-12
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
+# 支持版本 python版本跟随操作秕，Ubuntu 14.04, 15.04, 16.04(Python3.5.2) and 18.04(Python3.6.7)
 # 作者: Ivan Deng
 # 支持: http://www.sunpop.cn
 #-------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ CopyrightLogo='
 # 7. odoo访问地址为(用你的域名代替 yourserver.com) http://yourserver.com 或者http://yourserver.com:8069
 # 8. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
 # 9. 使用最新的pdf打印组件wkhtmltox 0.12.5 版本，打印更清晰
+# 10.增加python库，主要支持企业版中 ical, ldap, esc/pos，参考 https://www.odoo.com/documentation/12.0/setup/install.html
 #-------------------------------------------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
 #-------------------------------------------------------------------------------
@@ -151,6 +153,9 @@ function InstallBase()
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
     sudo pip3 install phonenumbers num2words scss libsass
+    sudo pip3 install vobject qrcode
+    sudo apt install libldap2-dev libsasl2-dev
+    sudo pip3 install pyldap
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
@@ -294,6 +299,8 @@ function InstallOdoo()    {
     # 下载个性化配置文件，将odoo用户加至管理组（方便，如有更高安全要求可另行处理）
     sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
     sudo usermod -a -G root odoo
+    # 处理附加模块
+    sudo npm install -g rtlcss
     # 设置个性化目录
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/filestore
