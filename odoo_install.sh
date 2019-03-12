@@ -156,6 +156,8 @@ function InstallBase()
     sudo pip3 install vobject qrcode
     sudo apt install libldap2-dev libsasl2-dev
     sudo pip3 install pyldap
+    # 中文分词
+    sudo pip install jieba
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
