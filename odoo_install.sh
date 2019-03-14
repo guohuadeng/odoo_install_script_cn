@@ -166,6 +166,7 @@ function InstallBase()
     sudo apt-get install wget bzr -y
     sudo apt-get install wget python-pip -y
     sudo apt-get install wget gdebi-core -y
+    sudo apt-get install xfonts-base xfonts-75dpi
 
     echo -e "\n--- Install other required packages"
     sudo apt-get install node-clean-css -y
@@ -202,8 +203,6 @@ function InstallBase()
       fi
       sudo wget $_url
       sudo gdebi --n `basename $_url`
-      sudo ln -s /usr/local/bin/wkhtmltopdf /usr/bin
-      sudo ln -s /usr/local/bin/wkhtmltoimage /usr/bin
       echo "libpng-12 is installed."
     fi
 
@@ -220,8 +219,9 @@ function InstallBase()
       fi
       sudo wget $_url
       sudo gdebi --n `basename $_url`
-      sudo ln -s /usr/local/bin/wkhtmltopdf /usr/bin
-      sudo ln -s /usr/local/bin/wkhtmltoimage /usr/bin
+#      sudo dpkg -i wkhtmltox_0.12.5-1.trusty_amd64.deb
+      sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
+      sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
     else
       echo "Wkhtmltopdf isn't installed due to the choice of the user!"
     fi
