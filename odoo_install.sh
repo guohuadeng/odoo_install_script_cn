@@ -145,6 +145,8 @@ function SetPassword()
 #--------------------------------------------------
 function InstallBase()
 {
+    # 注意，更新pip 后，可以直接pip，不要pip3
+    # pip install --upgrade pip
     # 删除旧文件，更新源
     rm odoo_install*
     rm wkhtmltox*
@@ -153,9 +155,13 @@ function InstallBase()
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip -y
     sudo pip3 install phonenumbers num2words scss libsass
-    sudo pip3 install vobject qrcode
+    sudo pip3 install vobject qrcode pycrypto
+    sudo pip3 xlwt xlsxwriter xlrd
     sudo apt install libldap2-dev libsasl2-dev
     sudo pip3 install pyldap
+    sudo pip3 install py3o.template
+    # 注意，在python3.5以下会报错 py3o.formats
+    sudo pip3 install py3o.formats
     # 中文分词
     sudo pip install jieba
 
