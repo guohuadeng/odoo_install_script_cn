@@ -9,7 +9,7 @@ CopyrightLogo='
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # 支持版本 python版本跟随操作秕，Ubuntu 14.04, 15.04, 16.04(Python3.5.2) and 18.04(Python3.6.7)
 # 作者: Ivan Deng
-# 支持: http://www.sunpop.cn
+# 支持: https://www.sunpop.cn
 #-------------------------------------------------------------------------------
 # 本脚本将安装Odoo到你的服务器上，一般而言，整个过程在3~5分钟完成
 # 为使中文设置生效，建议重启一下机器。 执行 reboot
@@ -89,7 +89,7 @@ LIBPNG_X64="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.de
 LIBPNG_X32="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
 # odoo.conf 下载链接，将使用 sunpop.cn的
 O_CONF_FILE="https://www.sunpop.cn/download/odoo.conf"
-O_NGINX_CONF_FILE="http://www.sunpop.cn/download/nginx.conf"
+O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
 
 #--------------------------------------------------
 # 更新服务器，多数要人工干预，故可以注释
@@ -157,7 +157,7 @@ function InstallBase()
     sudo pip3 install phonenumbers num2words scss libsass
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 xlwt xlsxwriter xlrd
-    sudo apt install libldap2-dev libsasl2-dev
+    sudo apt-get install libldap2-dev libsasl2-dev -y
     sudo pip3 install pyldap
     sudo pip3 install py3o.template
     # 注意，在python3.5以下会报错 py3o.formats
@@ -172,7 +172,7 @@ function InstallBase()
     sudo apt-get install wget bzr -y
     sudo apt-get install wget python-pip -y
     sudo apt-get install wget gdebi-core -y
-    sudo apt-get install xfonts-base xfonts-75dpi
+    sudo apt-get install xfonts-base xfonts-75dpi -y
 
     echo -e "\n--- Install other required packages"
     sudo apt-get install node-clean-css -y
@@ -238,7 +238,7 @@ function InstallBase()
     sudo sh -c 'echo "LANG=\"zh_CN.UTF-8\"" > /etc/default/locale'
     sudo apt install -y xfonts-utils
     sudo apt install -y unzip
-    sudo apt-get install -y ttf-wqy-* && sudo apt-get install ttf-wqy-zenhei && sudo apt-get install ttf-wqy-microhei && apt-get install -y language-pack-zh-hant language-pack-zh-hans
+    sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei && sudo apt-get install ttf-wqy-microhei -y&& apt-get install language-pack-zh-hant language-pack-zh-hans -y
     sudo chmod -R 0755 /usr/share/fonts/truetype/wqy && sudo chmod -R 0755 /usr/share/fonts/truetype/wqy/*
     sudo rm -rf /usr/share/fonts/truetype/microsoft
     sudo mkdir /usr/share/fonts/truetype/microsoft
@@ -329,7 +329,7 @@ function InstallOdoo()    {
 function InstallNg()    {
     if [ "$O_NGINX" == 'Nginx for Odoo in port 80[Yes]' ]; then
         echo -e "\n---- Prepare Install $O_NGINX ----"
-        sudo apt-get install -y nginx
+        sudo apt-get install nginx -y
         sudo wget -x -q $O_NGINX_CONF_FILE -O /etc/nginx/nginx.conf; sudo nginx -s reload
         echo -e "\n---- Nginx Done ----"
     fi;
@@ -354,7 +354,7 @@ function InstallDone()    {
     echo "Or: sudo bash /root/r.sh"
     echo "Please Reboot the server to make chinese setting effective."
     echo "Please visit our website to get more detail."
-    echo "http://www.sunpop.cn"
+    echo "https://www.sunpop.cn"
     echo "-----------------------------------------------------------"
 }
 
