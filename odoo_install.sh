@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2019-03-12
+# 最近更新：2019-05-29
 # 支持版本 Ubuntu 14.04, 15.04, 16.04 and 18.04
 # 支持版本 python版本跟随操作秕，Ubuntu 14.04, 15.04, 16.04(Python3.5.2) and 18.04(Python3.6.7)
 # 作者: Ivan Deng
@@ -20,10 +20,12 @@ CopyrightLogo='
 # (1) 选择要安装的类型
 # 1为从odoo官网安装odoo12，2为安装本地社区版odoo12，3为安装本地企业版odoo12(请联系购买)
 # 4为从odoo官网安装odoo11，5为安装本地社区版odoo11，6为安装本地企业版odoo11(请联系购买)
+# 7为从odoo官网安装odoo13
 # 选择2时请确保 odoo_12.0.latest_all.deb 已上传至当前目录
 # 选择3时请确保 odoo_12.0+e.latest_all.deb 已上传至当前目录
 # 选择5时请确保 odoo_11.0.latest_all.deb 已上传至当前目录
 # 选择6时请确保 odoo_11.0+e.latest_all.deb 已上传至当前目录
+# 选择8时请确保 odoo_13.0alpha1.latest.zip 已上传至当前目录
 # (2) 选择要安装的Postgresql 数据库
 # 选择 PG9 版本将有更好兼容性，也可杜绝某些阿里云服务器无法访问最新 postgresql 官网源的问题
 # 选择PG10 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
@@ -71,6 +73,7 @@ O_TYPE=""
 O_VERSION="12.0"
 O_COMMUNITY_LATEST="http://nightly.odoocdn.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
 O_COMMUNITY_LATEST_11="http://nightly.odoocdn.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
+O_COMMUNITY_LATEST_13="http://nightly.odoocdn.com/master/nightly/deb/odoo_13.0alpha1.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
@@ -119,7 +122,7 @@ function ConfirmPg()
 function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 12 \nPlease select your odoo version: (1~4)"
-	select selected in 'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' 'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' 'Exit';
+	select selected in 'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' 'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版'  'Odoo 13 Community from odoo.com 远程社区版' 'Odoo 13 Community from local[odoo_13.0alpha1.latest_all.deb] 本地社区版' 'Exit';
 	do break; done;
 	[ "$selected" == 'Exit' ] && echo 'Exit Install.' && exit;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
@@ -304,8 +307,16 @@ function InstallOdoo()    {
     if [ "$O_TYPE" == 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_11.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
+    if [ "$O_TYPE" == 'Odoo 13 Community from odoo.com 远程社区版' ]; then
+        sudo wget $O_COMMUNITY_LATEST_13 -O odoo_13.0alpha1.latest_all.deb
+        sudo gdebi --n `basename $O_COMMUNITY_LATEST_13`
+    fi;
+    if [ "$O_TYPE" == 'Odoo 13 Community from local[odoo_13.0alpha1.latest_all.deb] 本地社区版' ]; then
+        sudo dpkg -i $CURDIR/odoo_13.0alpha1.latest_all.deb;sudo apt-get -f -y install
+    fi;
     # 下载个性化配置文件，将odoo用户加至管理组（方便，如有更高安全要求可另行处理）
     sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
+#    sudo wget -x -q https://www.sunpop.cn/download/odoo.conf -O /etc/odoo/odoo.conf
     sudo usermod -a -G root odoo
     # 处理附加模块
     sudo npm install -g rtlcss
@@ -319,7 +330,6 @@ function InstallOdoo()    {
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/filestore
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons/12.0
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/addons
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
 }
