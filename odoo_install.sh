@@ -159,7 +159,7 @@ function InstallBase()
     sudo apt-get install python3 python3-pip -y
     sudo pip3 install phonenumbers num2words scss libsass
     sudo pip3 install vobject qrcode pycrypto
-    sudo pip3 xlwt xlsxwriter xlrd
+    sudo pip3 install xlwt xlsxwriter xlrd
     sudo apt-get install libldap2-dev libsasl2-dev -y
     sudo pip3 install pyldap
     sudo pip3 install py3o.template
@@ -167,6 +167,8 @@ function InstallBase()
     sudo pip3 install py3o.formats
     # 中文分词
     sudo pip install jieba
+    # odoo13 企业版
+    sudo pip install zeep
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
