@@ -148,6 +148,8 @@ function SetPassword()
 #--------------------------------------------------
 function InstallBase()
 {
+    # 如果是 centos 执行
+    # yum install apt
     # 注意，更新pip 后，可以直接pip，不要pip3
     # pip install --upgrade pip
     # 删除旧文件，更新源
@@ -156,7 +158,7 @@ function InstallBase()
     sudo apt-get update
 
     echo -e "\n--- Installing Python 3 + pip3 --"
-    sudo apt-get install python3 python3-pip -y
+    sudo apt-get install python3 python3-pip python3-polib -y
     sudo pip3 install phonenumbers num2words scss libsass
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
