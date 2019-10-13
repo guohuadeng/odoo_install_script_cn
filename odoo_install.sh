@@ -160,13 +160,15 @@ function InstallBase()
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip python3-polib -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
-    sudo pip3 install phonenumbers num2words scss libsass
+    sudo pip3 install phonenumbers num2words scss libsass polib crop_image
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
     sudo pip3 install pyldap
     sudo pip3 install py3o.template
     # 注意，在python3.5以下会报错 py3o.formats
     sudo pip3 install py3o.formats
+    # 微信与阿里
+    sudo pip3 install wechatpy python-alipay-sdk
     # 中文分词
     sudo pip3 install jieba
     # odoo13 企业版
