@@ -163,7 +163,7 @@ function InstallBase()
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip python3-polib -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
-    sudo pip3 install phonenumbers num2words scss libsass polib crop_image
+    sudo pip3 install phonenumbers num2words scss libsass polib crop_image Leven barcode
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
     sudo pip3 install pyldap
