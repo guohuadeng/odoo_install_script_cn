@@ -124,8 +124,7 @@ function ConfirmPg()
 function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 13 \nPlease select your odoo version: (1~9)"
-	select selected in 	'Odoo 13 Community from odoo.com 远程社区版' 'Odoo 13 Community from local[odoo_13.0.latest_all.deb] 本地社区版' 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版'	'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版'	'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版'
-	'Exit';
+	select selected in 	'Odoo 13 Community from odoo.com 远程社区版' 'Odoo 13 Community from local[odoo_13.0.latest_all.deb] 本地社区版' 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版'	'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版'	'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版'	'Exit';
 	do break; done;
 	[ "$selected" == 'Exit' ] && echo 'Exit Install.' && exit;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
@@ -162,8 +161,14 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip python3-polib -y
+    sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
+    sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
+    sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
+    sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
+    #报错的包 python3-qrcode python3-vobject  python3-zeep  python3-pyldap
+    sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-xlsxwriter python3-suds python3-xlrd -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
-    sudo pip3 install phonenumbers num2words scss libsass polib crop_image Leven barcode
+    sudo pip3 install phonenumbers num2words scss libsass polib python-barcode
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
     sudo pip3 install pyldap
@@ -176,6 +181,7 @@ function InstallBase()
     sudo pip3 install jieba
     # odoo13 企业版
     sudo pip3 install zeep
+    sudo pip3 install python3-jinja2 python3-libsass python3-lxml python3-mako
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
