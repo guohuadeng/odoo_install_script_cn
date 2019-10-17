@@ -168,7 +168,9 @@ function InstallBase()
     #报错的包 python3-qrcode python3-vobject  python3-zeep  python3-pyldap
     sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-xlsxwriter python3-suds python3-xlrd -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
-    sudo pip3 install phonenumbers num2words scss libsass polib python-barcode
+    sudo pip3 install phonenumbers num2words scss libsass polib -y
+    sudo pip3 install python-Levenshtein -y
+    sudo pip3 install python-barcode -y
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
     sudo pip3 install pyldap
