@@ -171,18 +171,19 @@ function InstallBase()
     sudo pip3 install phonenumbers num2words scss libsass polib -y
     sudo pip3 install python-Levenshtein -y
     sudo pip3 install python-barcode -y
-    sudo pip3 install vobject qrcode pycrypto
-    sudo pip3 install xlwt xlsxwriter xlrd
-    sudo pip3 install pyldap
-    sudo pip3 install py3o.template
+    sudo pip3 install vobject qrcode pycrypto -y
+    sudo pip3 install xlwt xlsxwriter xlrd -y
+    sudo pip3 install pyldap -y
+    sudo pip3 install py3o.template -y
+    sudo pip3 install firebase_admin -y
     # 注意，在python3.5以下会报错 py3o.formats
-    sudo pip3 install py3o.formats
+    sudo pip3 install py3o.formats -y
     # 微信与阿里
-    sudo pip3 install wechatpy python-alipay-sdk
+    sudo pip3 install wechatpy python-alipay-sdk -y
     # 中文分词
-    sudo pip3 install jieba
+    sudo pip3 install jieba -y
     # odoo13 企业版
-    sudo pip3 install zeep
+    sudo pip3 install zeep -y
     sudo pip3 install python3-jinja2 python3-libsass python3-lxml python3-mako
 
     echo -e "\n---- Install tool packages ----"
