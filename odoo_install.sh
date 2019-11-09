@@ -166,6 +166,10 @@ function InstallBase()
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
     sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
     #报错的包 python3-qrcode python3-vobject  python3-zeep  python3-pyldap
+    sudo apt-get install python3-qrcode -y
+    sudo apt-get install python3-vobject -y
+    sudo apt-get install python3-zeep -y
+    sudo apt-get install python3-pyldap -y
     sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-xlsxwriter python3-suds python3-xlrd -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
     sudo pip3 install phonenumbers num2words scss libsass polib -y
