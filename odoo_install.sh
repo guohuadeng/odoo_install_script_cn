@@ -160,6 +160,7 @@ function InstallBase()
     sudo apt-get update
 
     echo -e "\n--- Installing Python 3 + pip3 --"
+    sudo apt-get install npm -y
     sudo apt-get install python3 python3-pip python3-polib -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
@@ -346,6 +347,7 @@ function InstallOdoo()    {
     sudo npm install -g rtlcss
     # 设置个性化目录
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
+    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/addons
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/filestore
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
     sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
