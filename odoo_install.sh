@@ -172,22 +172,22 @@ function InstallBase()
     sudo apt-get install python3-pyldap -y
     sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-xlsxwriter python3-suds python3-xlrd -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
-    sudo pip3 install phonenumbers num2words scss libsass polib -y
-    sudo pip3 install python-Levenshtein -y
-    sudo pip3 install python-barcode -y
-    sudo pip3 install vobject qrcode pycrypto -y
-    sudo pip3 install xlwt xlsxwriter xlrd -y
-    sudo pip3 install pyldap -y
-    sudo pip3 install py3o.template -y
-    sudo pip3 install firebase_admin -y
+    sudo pip3 install phonenumbers num2words scss libsass polib
+    sudo pip3 install python-Levenshtein
+    sudo pip3 install python-barcode
+    sudo pip3 install vobject qrcode pycrypto
+    sudo pip3 install xlwt xlsxwriter xlrd
+    sudo pip3 install pyldap
+    sudo pip3 install py3o.template
+    sudo pip3 install firebase_admin
     # 注意，在python3.5以下会报错 py3o.formats
-    sudo pip3 install py3o.formats -y
+    sudo pip3 install py3o.formats
     # 微信与阿里
-    sudo pip3 install wechatpy python-alipay-sdk -y
+    sudo pip3 install wechatpy python-alipay-sdk
     # 中文分词
-    sudo pip3 install jieba -y
+    sudo pip3 install jieba
     # odoo13 企业版
-    sudo pip3 install zeep -y
+    sudo pip3 install zeep
     sudo pip3 install python3-jinja2 python3-libsass python3-lxml python3-mako
 
     echo -e "\n---- Install tool packages ----"
