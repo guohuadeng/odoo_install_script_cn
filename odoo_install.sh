@@ -160,13 +160,12 @@ function InstallBase()
     sudo apt-get update
 
     echo -e "\n--- Installing Python 3 + pip3 --"
-    sudo apt-get install npm -y
     sudo apt-get install python3 python3-pip python3-polib -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
     sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
-    #报错的包 python3-qrcode python3-vobject  python3-zeep  python3-pyldap
+    sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap
     sudo apt-get install python3-qrcode -y
     sudo apt-get install python3-vobject -y
     sudo apt-get install python3-zeep -y
@@ -189,7 +188,6 @@ function InstallBase()
     sudo pip3 install jieba
     # odoo13 企业版
     sudo pip3 install zeep
-    sudo pip3 install python3-jinja2 python3-libsass python3-lxml python3-mako
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
