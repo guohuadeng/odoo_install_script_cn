@@ -28,8 +28,10 @@ CopyrightLogo='
 # 选择8时请确保 odoo_11.0.latest_all.deb 已上传至当前目录
 # 选择9时请确保 odoo_11.0+e.latest_all.deb 已上传至当前目录
 # (2) 选择要安装的Postgresql 数据库
-# 选择 PG9 版本将有更好兼容性，也可杜绝某些阿里云服务器无法访问最新 postgresql 官网源的问题
-# 选择PG10 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
+# 数据库安装上，当前 ubuntu 18 默认已经是安装 Postgresql 10
+# 选择 PG12 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
+# 选择 PG11 版本亦可
+# 选择 PG10 版本将有更好兼容性，直接系统默认安装
 # (3) 选择是否要安装Nginx
 # 安装Nginx则可直接使用80端口访问odoo，同时可使用网站即时通讯。
 # 注意，当前Nginx的配置只支持 www.* 开始的网站。如果域名为其它或者是IP，请自行更改 nginx.conf
@@ -57,7 +59,7 @@ echo "$CopyrightLogo";
 # 变量定义
 #--------------------------------------------------
 # 当前目录
-CURDIR=`/bin/pwd`
+CURDIR=$(pwd)
 # Ubuntu的版本号
 U_Version=$(lsb_release -r --short)
 U_Version=${U_Version:0:2}
@@ -117,7 +119,7 @@ O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
 function ConfirmPg()
 {
 	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
-	select selected in 'Postgresql 9.x [OS default. Good compatibility]' 'Postgresql 10 [Better Performance]'; do break; done;
+	select selected in 'Postgresql 12 [Recommend. Good Performance]' 'Postgresql 11' 'Postgresql 10.x [OS default. Good Compatibility]'; do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
 	ConfirmPg;
 }
@@ -161,11 +163,12 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip python3-polib -y
+    sudo apt-get install python-dev -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
     sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
-    sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap
+    sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap -y
     sudo apt-get install python3-qrcode -y
     sudo apt-get install python3-vobject -y
     sudo apt-get install python3-zeep -y
@@ -182,12 +185,15 @@ function InstallBase()
     sudo pip3 install firebase_admin
     # 注意，在python3.5以下会报错 py3o.formats
     sudo pip3 install py3o.formats
-    # 微信与阿里
-    sudo pip3 install wechatpy python-alipay-sdk
     # 中文分词
     sudo pip3 install jieba
     # odoo13 企业版
     sudo pip3 install zeep
+    # 微信与阿里
+    sudo pip3 install wechatpy python-alipay-sdk pycryptodome
+    sudo pip3 install itsdangerous==0.24
+    sudo pip3 install kdniao==0.1.2
+    sudo pip3 install xmltodict==0.11.0
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
@@ -201,7 +207,6 @@ function InstallBase()
     sudo apt-get install node-clean-css -y
     sudo apt-get install node-less -y
     sudo apt-get install python-gevent -y
-
     sudo apt-get install libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libpq-dev libpng-dev libjpeg-dev xz-utils -y
 
     # 本地化
@@ -280,25 +285,28 @@ function InstallBase()
     sudo echo "0  */2  * * *   root    /usr/sbin/ntpdate cn.pool.ntp.org >> /tmp/tmp.txt" >> /etc/crontab
 }
 #--------------------------------------------------
-# 安装 PostgreSQL Server 10.0
+# 安装 PostgreSQL Server 12, 11, 10
 #--------------------------------------------------
 function InstallPg()    {
     echo -e "\n---- Prepare Install $O_PG ----"
+    sudo apt-get install curl ca-certificates -y
+    sudo apt-get install -y wget ca-certificates
+    sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
-    if [ "$O_PG" == 'Postgresql 9.x [OS default. Good compatibility]' ]; then
-        sudo apt-get install postgresql -y
+    echo -e "\n---- Installing Postgresql Server ----"
+    sudo apt-key update
+    sudo apt-get update
+
+    if [ "$O_PG" == 'Postgresql 12 [Recommend. Good Performance]' ]; then
+        sudo apt-get install postgresql-12 -y
     fi;
 
-    if [ "$O_PG" == 'Postgresql 10 [Better Performance]' ]; then
-        sudo apt-get install curl ca-certificates -y
-        sudo apt-get install -y wget ca-certificates
-        sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-
-        echo -e "\n---- Installing PostgreSQL 10 Server ----"
-        sudo apt-key update
-        sudo apt-get update
-        sudo apt-get install postgresql-10 -y
+    if [ "$O_PG" == 'Postgresql 11' ]; then
+        sudo apt-get install postgresql-11 -y
+    fi;
+    if [ "$O_PG" == 'Postgresql 10.x [OS default. Good Compatibility]' ]; then
+        sudo apt-get install postgresql -y
     fi;
 }
 
@@ -372,6 +380,7 @@ function InstallNg()    {
 # 设置重启脚本，完成安装
 #--------------------------------------------------
 function InstallDone()    {
+    sudo rm $CURDIR/r.sh
     sudo touch $CURDIR/r.sh
     sudo sh -c 'echo "#!/usr/bin/env bash" > $CURDIR/r.sh'
     sudo sh -c 'echo "sudo systemctl restart postgresql && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> $CURDIR/r.sh'
