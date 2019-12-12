@@ -163,7 +163,7 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip python3-polib -y
-    sudo apt-get install python-dev -y
+    sudo apt-get install python-dev gdebi -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
@@ -210,7 +210,7 @@ function InstallBase()
     sudo apt-get install libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libpq-dev libpng-dev libjpeg-dev xz-utils -y
 
     # 本地化
-    sudo apt install -y aptitude;sudo aptitude install -y locales
+    sudo apt-get install aptitude -y;sudo aptitude install -y locales
     # 设置时区，默认先不设置，因为有时是境外主机
     # sudo timedatectl set-timezone "Asia/Shanghai"
     # sudo timedatectl set-timezone "America/New_York"
@@ -253,6 +253,8 @@ function InstallBase()
       fi
       sudo wget $_url
       sudo gdebi --n `basename $_url`
+#      sudo gdebi --n `basename https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb`
+#      sudo gdebi --n `basename https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb`
 #      sudo dpkg -i wkhtmltox_0.12.5-1.trusty_amd64.deb
       sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
       sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
@@ -264,18 +266,20 @@ function InstallBase()
     # 安装中文字体，装完后要重启
     #--------------------------------------------------
     sudo sh -c 'echo "LANG=\"zh_CN.UTF-8\"" > /etc/default/locale'
-    sudo apt install -y xfonts-utils
-    sudo apt install -y unzip
-    sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei && sudo apt-get install ttf-wqy-microhei -y&& apt-get install language-pack-zh-hant language-pack-zh-hans -y
+    sudo apt-get install xfonts-utils -y
+    sudo apt-get install unzip -y
+    sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
+    sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
     sudo chmod -R 0755 /usr/share/fonts/truetype/wqy && sudo chmod -R 0755 /usr/share/fonts/truetype/wqy/*
     sudo rm -rf /usr/share/fonts/truetype/microsoft
     sudo mkdir /usr/share/fonts/truetype/microsoft
     sudo wget -x -q $O_FONT -O /usr/share/fonts/truetype/microsoft/microsoft.zip
+#    sudo wget -x -q https://www.sunpop.cn/download/microsoft.zip -O /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo unzip -q -d /usr/share/fonts/truetype/microsoft /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo rm /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft && sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft/*
-    sudo cd /usr/share/fonts/truetype/wqy && mkfontscale && mkfontdir && fc-cache -fv
-    sudo cd /usr/share/fonts/truetype/microsoft && mkfontscale && mkfontdir && fc-cache -fv
+    cd /usr/share/fonts/truetype/wqy && mkfontscale && mkfontdir && fc-cache -fv
+    cd /usr/share/fonts/truetype/microsoft && mkfontscale && mkfontdir && fc-cache -fv
 
     #--------------------------------------------------
     # cron 配置时间同步，必须要做，避免多数问题，最好停用本机ntpd服务器
@@ -357,6 +361,7 @@ function InstallOdoo()    {
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/filestore
     sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
     sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
+    sudo mkdir /usr/lib/python3/dist-packages/odoo/mytheme
     sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/filestore
@@ -364,6 +369,7 @@ function InstallOdoo()    {
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/addons
     sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
+    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/mytheme
 }
 #--------------------------------------------------
 # 安装 Nginx 作为 web 转发，启用 polling
