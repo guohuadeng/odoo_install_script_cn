@@ -175,6 +175,11 @@ function InstallBase()
     sudo apt-get install python3-pyldap -y
     sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-xlsxwriter python3-suds python3-xlrd -y
     sudo apt-get install libldap2-dev libsasl2-dev -y
+    # nginx 源码安装的支持
+    sudo apt-get install libpcre3 libpcre3-dev -y
+    sudo apt-get install zlib1g-dev -y
+    sudo apt-get install openssl libssl-dev
+
     sudo pip3 install phonenumbers num2words scss libsass polib
     sudo pip3 install python-Levenshtein
     sudo pip3 install python-barcode
