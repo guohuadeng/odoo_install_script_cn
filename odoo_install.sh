@@ -119,16 +119,15 @@ O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
 function ConfirmPg()
 {
 	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
-	select selected in 'Postgresql 12 [Recommend. Good Performance]' 'Postgresql 11' 'Postgresql 10.x [OS default. Good Compatibility]'; do break; done;
+	select selected in 'Postgresql 12 [Recommend. Good Performance]' 'Postgresql 11' 'Postgresql 10.x [OS default. Good Compatibility]' 'None'; do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
 	ConfirmPg;
 }
 function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 13 \nPlease select your odoo version: (1~9)"
-	select selected in 	'Odoo 13 Community from odoo.com 远程社区版' 'Odoo 13 Community from local[odoo_13.0.latest_all.deb] 本地社区版' 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版'	'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版'	'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版'	'Exit';
+	select selected in 	'Odoo 13 Community from odoo.com 远程社区版' 'Odoo 13 Community from local[odoo_13.0.latest_all.deb] 本地社区版' 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版'	'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版'	'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版'  'None';
 	do break; done;
-	[ "$selected" == 'Exit' ] && echo 'Exit Install.' && exit;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmOdoo;
 }
@@ -297,15 +296,18 @@ function InstallBase()
 # 安装 PostgreSQL Server 12, 11, 10
 #--------------------------------------------------
 function InstallPg()    {
-    echo -e "\n---- Prepare Install $O_PG ----"
-    sudo apt-get install curl ca-certificates -y
-    sudo apt-get install -y wget ca-certificates
-    sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
-    echo -e "\n---- Installing Postgresql Server ----"
-    sudo apt-key update
-    sudo apt-get update
+    if [ "$O_PG" != 'None' ]; then
+        echo -e "\n---- Prepare Install $O_PG ----"
+        sudo apt-get install curl ca-certificates -y
+        sudo apt-get install -y wget ca-certificates
+        sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+        echo -e "\n---- Installing Postgresql Server ----"
+        sudo apt-key update
+        sudo apt-get update
+    fi;
 
     if [ "$O_PG" == 'Postgresql 12 [Recommend. Good Performance]' ]; then
         sudo apt-get install postgresql-12 -y
@@ -323,7 +325,9 @@ function InstallPg()    {
 # 安装odoo
 #--------------------------------------------------
 function InstallOdoo()    {
-    echo -e "\n==== Installing $O_TYPE===="
+    if [ "$O_TYPE" != 'None' ]; then
+        echo -e "\n==== Installing $O_TYPE===="
+    fi;
     if [ "$O_TYPE" == 'Odoo 13 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST_13 -O odoo_13.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
@@ -354,27 +358,30 @@ function InstallOdoo()    {
     if [ "$O_TYPE" == 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_11.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
-    # 下载个性化配置文件，将odoo用户加至管理组（方便，如有更高安全要求可另行处理）
-    sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
-#    sudo wget -x -q https://www.sunpop.cn/download/odoo.conf -O /etc/odoo/odoo.conf
-    sudo usermod -a -G root odoo
-    # 处理附加模块
-    sudo npm install -g rtlcss
-    # 设置个性化目录
-    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
-    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/addons
-    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/filestore
-    sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
-    sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
-    sudo mkdir /usr/lib/python3/dist-packages/odoo/mytheme
-    sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/filestore
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/addons
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
-    sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/mytheme
+
+    if [ "$O_TYPE" != 'None' ]; then
+        # 下载个性化配置文件，将odoo用户加至管理组（方便，如有更高安全要求可另行处理）
+        sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
+    #    sudo wget -x -q https://www.sunpop.cn/download/odoo.conf -O /etc/odoo/odoo.conf
+        sudo usermod -a -G root odoo
+        # 处理附加模块
+        sudo npm install -g rtlcss
+        # 设置个性化目录
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/addons
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/filestore
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/mytheme
+        sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/filestore
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/addons
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/addons
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/mytheme
+    fi;
 }
 #--------------------------------------------------
 # 安装 Nginx 作为 web 转发，启用 polling
