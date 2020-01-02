@@ -75,9 +75,9 @@ O_PORT="8069"
 # 选择要安装的odoo版本，如: 13.0，12.0, 11.0, 10.0 或者 saas-18. 如果使用 'master' 则 master 分支将会安装
 O_TYPE=""
 O_VERSION="13.0"
-O_COMMUNITY_LATEST_13="http://nightly.odoo.com/13.0/nightly/deb/odoo_13.0.latest_all.deb"
-O_COMMUNITY_LATEST_12="http://nightly.odoo.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
-O_COMMUNITY_LATEST_11="http://nightly.odoo.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
+O_COMMUNITY_LATEST_13="http://nightly.odoocdn.com/13.0/nightly/deb/odoo_13.0.latest_all.deb"
+O_COMMUNITY_LATEST_12="http://nightly.odoocdn.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
+O_COMMUNITY_LATEST_11="http://nightly.odoocdn.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
