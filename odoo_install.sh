@@ -162,7 +162,7 @@ function InstallBase()
 
     echo -e "\n--- Installing Python 3 + pip3 --"
     sudo apt-get install python3 python3-pip python3-polib -y
-    sudo apt-get install python-dev gdebi -y
+    sudo apt-get install python-dev python3-wheel gdebi -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
@@ -185,10 +185,7 @@ function InstallBase()
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
     sudo pip3 install pyldap
-    sudo pip3 install py3o.template
     sudo pip3 install firebase_admin
-    # 注意，在python3.5以下会报错 py3o.formats
-    sudo pip3 install py3o.formats
     # 中文分词
     sudo pip3 install jieba
     # odoo13 企业版
