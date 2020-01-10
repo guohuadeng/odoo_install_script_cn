@@ -177,7 +177,27 @@ function InstallBase()
     # nginx 源码安装的支持
     sudo apt-get install libpcre3 libpcre3-dev -y
     sudo apt-get install zlib1g-dev -y
-    sudo apt-get install openssl libssl-dev
+    sudo apt-get install openssl libssl-dev -y
+    sudo apt-get install phthon3-phonenumbers -y
+
+    echo -e "\n---- Install tool packages ----"
+    # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
+    sudo apt-get install sntp -y
+    sudo apt-get install git -y
+    sudo apt-get install bzr -y
+    sudo apt-get install gdebi-core -y
+    sudo apt-get install xfonts-base xfonts-75dpi -y
+
+    echo -e "\n--- Install other required packages"
+    sudo apt-get install node-clean-css -y
+    sudo apt-get install node-less -y
+    sudo apt-get install python-gevent -y
+    sudo apt-get install libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libpq-dev libpng-dev libjpeg-dev xz-utils -y
+    # 中文字体
+    sudo apt-get install xfonts-utils -y
+    sudo apt-get install unzip -y
+    sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
+    sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
 
     sudo pip3 install phonenumbers num2words scss libsass polib
     sudo pip3 install python-Levenshtein
@@ -195,20 +215,6 @@ function InstallBase()
     sudo pip3 install itsdangerous==0.24
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
-
-    echo -e "\n---- Install tool packages ----"
-    # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
-    sudo apt-get install sntp -y
-    sudo apt-get install git -y
-    sudo apt-get install bzr -y
-    sudo apt-get install gdebi-core -y
-    sudo apt-get install xfonts-base xfonts-75dpi -y
-
-    echo -e "\n--- Install other required packages"
-    sudo apt-get install node-clean-css -y
-    sudo apt-get install node-less -y
-    sudo apt-get install python-gevent -y
-    sudo apt-get install libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libpq-dev libpng-dev libjpeg-dev xz-utils -y
 
     # 本地化
     sudo apt-get install aptitude -y;sudo aptitude install -y locales
@@ -267,10 +273,6 @@ function InstallBase()
     # 安装中文字体，装完后要重启
     #--------------------------------------------------
     sudo sh -c 'echo "LANG=\"zh_CN.UTF-8\"" > /etc/default/locale'
-    sudo apt-get install xfonts-utils -y
-    sudo apt-get install unzip -y
-    sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
-    sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
     sudo chmod -R 0755 /usr/share/fonts/truetype/wqy && sudo chmod -R 0755 /usr/share/fonts/truetype/wqy/*
     sudo rm -rf /usr/share/fonts/truetype/microsoft
     sudo mkdir /usr/share/fonts/truetype/microsoft
