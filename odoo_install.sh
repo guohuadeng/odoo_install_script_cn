@@ -177,7 +177,8 @@ function InstallBase()
     # nginx 源码安装的支持
     sudo apt-get install libpcre3 libpcre3-dev -y
     sudo apt-get install zlib1g-dev -y
-    sudo apt-get install openssl libssl-dev -y
+    sudo apt-get install openssl -y
+    sudo apt-get install libssl-dev -y
     sudo apt-get install phthon3-phonenumbers -y
 
     echo -e "\n---- Install tool packages ----"
