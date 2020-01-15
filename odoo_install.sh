@@ -282,8 +282,8 @@ function InstallBase()
     sudo unzip -q -d /usr/share/fonts/truetype/microsoft /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo rm /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft && sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft/*
-    cd /usr/share/fonts/truetype/wqy && mkfontscale && mkfontdir && fc-cache -fv
-    cd /usr/share/fonts/truetype/microsoft && mkfontscale && mkfontdir && fc-cache -fv
+    cd /usr/share/fonts/truetype/wqy && sudo mkfontscale && sudo mkfontdir && sudo fc-cache -fv
+    cd /usr/share/fonts/truetype/microsoft && sudo mkfontscale && sudo mkfontdir && sudo fc-cache -fv
 
     #--------------------------------------------------
     # cron 配置时间同步，必须要做，避免多数问题，最好停用本机ntpd服务器
