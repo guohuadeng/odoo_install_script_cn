@@ -166,9 +166,15 @@ function InstallBase()
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
+    sudo apt-get install python3-psycopg2 -y
     sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
     sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap -y
-    sudo apt-get install python3-qrcode -y
+    sudo apt-get install python3-mock -y
+    sudo apt-get install python3-psutil -y
+    # 要注意版本，3.6.x 用 2=2.7.4-1
+    sudo apt-get install  python3-psycopg2=2.7.4-1 -y
+    sudo apt-get install  python3-passlib -y
+    sudo apt-get install  python3-ofxparse -y
     sudo apt-get install python3-vobject -y
     sudo apt-get install python3-zeep -y
     sudo apt-get install python3-pyldap -y
@@ -205,7 +211,7 @@ function InstallBase()
     sudo pip3 install python-barcode
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
-    sudo pip3 install pyldap
+    sudo pip3 install pyldap rsa
     sudo pip3 install firebase_admin
     # 中文分词
     sudo pip3 install jieba
@@ -216,6 +222,7 @@ function InstallBase()
     sudo pip3 install itsdangerous==0.24
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
+    #     python3 -m pip install xxxx
 
     # 本地化
     sudo apt-get install aptitude -y;sudo aptitude install -y locales
@@ -337,6 +344,7 @@ function InstallOdoo()    {
     fi;
     if [ "$O_TYPE" == 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_13.0+e.latest_all.deb;sudo apt-get -f -y install
+        sudo dpkg -i o13e0519.deb;sudo apt-get -f -y install
     fi;
     if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST -O odoo_12.0.latest_all.deb
@@ -373,7 +381,9 @@ function InstallOdoo()    {
         sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile/sessions
         sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
         sudo mkdir /usr/lib/python3/dist-packages/odoo/mytheme
+        sudo mkdir /usr/lib/python3/dist-packages/odoo/backups
         sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
+        sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/backups/
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/filestore
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile/sessions
@@ -381,6 +391,7 @@ function InstallOdoo()    {
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/addons
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/myaddons
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/mytheme
+        sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/backups
     fi;
 }
 #--------------------------------------------------
