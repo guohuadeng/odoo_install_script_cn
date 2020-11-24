@@ -344,7 +344,6 @@ function InstallOdoo()    {
     fi;
     if [ "$O_TYPE" == 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_13.0+e.latest_all.deb;sudo apt-get -f -y install
-        sudo dpkg -i o13e0519.deb;sudo apt-get -f -y install
     fi;
     if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST -O odoo_12.0.latest_all.deb
