@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2019-12-29
+# 最近更新：2021-01-22
 # 支持版本 Ubuntu 18, 16, 15, 14
 # 支持版本 python版本跟随操作系统，Ubuntu 18(Python3.6.7)。 14, 15, 16(Python3.5.2)
 # 作者: Ivan Deng
@@ -211,8 +211,10 @@ function InstallBase()
     sudo pip3 install python-barcode
     sudo pip3 install vobject qrcode pycrypto
     sudo pip3 install xlwt xlsxwriter xlrd
-    sudo pip3 install pyldap rsa
-    sudo pip3 install firebase_admin
+    sudo pip3 install pyldap
+    sudo pip3 install rsa
+    sudo pip3 install zxcvbn
+#    sudo pip3 install firebase_admin
     # 中文分词
     sudo pip3 install jieba
     # odoo13 企业版
@@ -222,6 +224,7 @@ function InstallBase()
     sudo pip3 install itsdangerous==0.24
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
+    sudo pip3 install paramiko
     #     python3 -m pip install xxxx
 
     # 本地化
@@ -251,6 +254,8 @@ function InstallBase()
           _url=$LIBPNG_X32
       fi
       sudo wget $_url
+#      sudo wget https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
+#      sudo gdebi --n `basename https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb`
       sudo gdebi --n `basename $_url`
       echo "libpng-12 is installed."
     fi
@@ -268,8 +273,7 @@ function InstallBase()
       fi
       sudo wget $_url
       sudo gdebi --n `basename $_url`
-#      sudo gdebi --n `basename https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb`
-#      sudo gdebi --n `basename https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb`
+#      sudo wget https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb
 #      sudo dpkg -i wkhtmltox_0.12.5-1.trusty_amd64.deb
       sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
       sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
@@ -344,6 +348,7 @@ function InstallOdoo()    {
     fi;
     if [ "$O_TYPE" == 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_13.0+e.latest_all.deb;sudo apt-get -f -y install
+#        sudo dpkg -i odoo_13.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
     if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST -O odoo_12.0.latest_all.deb
@@ -371,7 +376,15 @@ function InstallOdoo()    {
         sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
     #    sudo wget -x -q https://www.sunpop.cn/download/odoo.conf -O /etc/odoo/odoo.conf
         sudo usermod -a -G root odoo
-        # 处理附加模块
+        # 处理附加模块, npm
+        sudo apt-get install npm -y
+        sudo npm -g install npm
+        sudo npm install npm@latest -g
+        sudo npm install -g n
+        sudo n latest
+        sudo n stable
+        sudo n lts
+        sudo npm install -g postcss
         sudo npm install -g rtlcss
         # 设置个性化目录
         sudo mkdir /usr/lib/python3/dist-packages/odoo/odoofile
