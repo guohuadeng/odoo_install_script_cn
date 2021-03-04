@@ -240,6 +240,7 @@ function InstallBase()
     sudo apt-get install ntpdate -y
     # 设置系统时间与网络时间同步
     ntpdate cn.pool.ntp.org
+    sudo ntpdate 10.76.244.160
     # 将系统时间写入硬件时间
     sudo hwclock --systohc
     #--------------------------------------------------
