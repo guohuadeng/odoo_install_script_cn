@@ -171,6 +171,10 @@ function InstallBase()
     sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap -y
     sudo apt-get install python3-mock -y
     sudo apt-get install python3-psutil -y
+    sudo apt-get install python3-xlwt -y
+    sudo apt-get install fonts-inconsolata -y
+    sudo apt-get install fonts-font-awesome -y
+    sudo apt-get install fonts-roboto-unhinted -y
     # 要注意版本，3.6.x 用 2=2.7.4-1
     sudo apt-get install  python3-psycopg2=2.7.4-1 -y
     sudo apt-get install  python3-passlib -y
