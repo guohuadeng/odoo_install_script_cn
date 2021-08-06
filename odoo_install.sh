@@ -229,6 +229,7 @@ function InstallBase()
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
     sudo pip3 install paramiko
+    sudo pip3 install oauthlib
     #     python3 -m pip install xxxx
 
     # 本地化
