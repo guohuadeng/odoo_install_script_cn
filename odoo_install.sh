@@ -119,7 +119,7 @@ O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
 function ConfirmPg()
 {
 	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
-	select selected in 'Postgresql 12 [Recommend. Good Performance]' 'Postgresql 11' 'Postgresql 10.x [OS default. Good Compatibility]' 'None'; do break; done;
+	select selected in 'Postgresql 13.x [Recommend. OS default]' 'Postgresql 12' 'Postgresql 11' 'Postgresql 10' 'None'; do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
 	ConfirmPg;
 }
@@ -326,15 +326,20 @@ function InstallPg()    {
         sudo apt-get update
     fi;
 
-    if [ "$O_PG" == 'Postgresql 12 [Recommend. Good Performance]' ]; then
+    if [ "$O_PG" == 'Postgresql 13.x [Recommend. OS default]' ]; then
+        sudo apt-get install postgresql-13 -y
+
+    if [ "$O_PG" == 'Postgresql 12' ]; then
         sudo apt-get install postgresql-12 -y
     fi;
 
     if [ "$O_PG" == 'Postgresql 11' ]; then
         sudo apt-get install postgresql-11 -y
     fi;
-    if [ "$O_PG" == 'Postgresql 10.x [OS default. Good Compatibility]' ]; then
-        sudo apt-get install postgresql -y
+
+    if [ "$O_PG" == 'Postgresql 10' ]; then
+        sudo apt-get install postgresql-10 -y
+    fi;
     fi;
 }
 
