@@ -154,7 +154,7 @@ function InstallBase()
     # 如果是 centos 执行
     # yum install apt
     # 注意，更新pip 后，可以直接pip，不要pip3
-    # pip install --upgrade pip
+    sudo pip3 install --upgrade pip
     # 删除旧文件，更新源
     rm odoo_install*
     rm wkhtmltox*
@@ -228,6 +228,10 @@ function InstallBase()
     sudo pip3 install itsdangerous==0.24
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
+    export CRYPTOGRAPHY_DONT_BUILD_RUST=1
+    sudo pip3 install cryptography
+    sudo pip3 install  cffi>=1.12
+    sudo pip3 install  rust
     sudo pip3 install paramiko
     sudo pip3 install oauthlib
     #     python3 -m pip install xxxx
