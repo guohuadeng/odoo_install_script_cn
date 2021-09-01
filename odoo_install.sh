@@ -214,7 +214,9 @@ function InstallBase()
     sudo pip3 install python-Levenshtein
     sudo pip3 install python-barcode
     sudo pip3 install vobject qrcode pycrypto
-    sudo pip3 install xlwt xlsxwriter xlrd
+    sudo pip3 install xlwt xlsxwriter
+    # 注意，1.2.0才支持xlsx，其它高版本只支持xls
+    sudo pip3 install xlrd==1.2.0
     sudo pip3 install pyldap
     sudo pip3 install rsa
     sudo pip3 install zxcvbn
@@ -331,7 +333,8 @@ function InstallPg()    {
     fi;
 
     if [ "$O_PG" == 'Postgresql 13.x [Recommend. OS default]' ]; then
-        sudo apt-get install postgresql-13 -y
+        sudo apt-get install postgresql -y
+        sudo apt-get install postgresql-contrib -y
 
     if [ "$O_PG" == 'Postgresql 12' ]; then
         sudo apt-get install postgresql-12 -y
