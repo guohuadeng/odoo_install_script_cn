@@ -210,16 +210,12 @@ function InstallBase()
     sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
     sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
 
-    sudo pip3 install phonenumbers num2words scss libsass polib
+    sudo pip3 install  num2words scss libsass polib
     sudo pip3 install python-Levenshtein
     sudo pip3 install python-barcode
     sudo pip3 install vobject qrcode pycrypto
-    sudo pip3 install xlwt xlsxwriter
-    # 注意，1.2.0才支持xlsx，其它高版本只支持xls
-    sudo pip3 install xlrd==1.2.0
-    sudo pip3 install pyldap
-    sudo pip3 install rsa
-    sudo pip3 install zxcvbn
+    # 注意，xlrd 1.2.0才支持xlsx，其它高版本只支持xls
+    sudo pip3 install phonenumbers xlwt xlsxwriter xlrd==1.2.0 pyldap rsa zxcvbn -i https://mirrors.ustc.edu.cn/pypi/web/simple
 #    sudo pip3 install firebase_admin
     # 中文分词
     sudo pip3 install jieba
@@ -227,15 +223,9 @@ function InstallBase()
     sudo pip3 install zeep
     # 微信与阿里
     sudo pip3 install wechatpy python-alipay-sdk pycryptodome
-    sudo pip3 install itsdangerous==0.24
-    sudo pip3 install kdniao==0.1.2
-    sudo pip3 install xmltodict==0.11.0
+    sudo pip3 install itsdangerous==0.24 kdniao==0.1.2 xmltodict==0.11.0 -i https://mirrors.ustc.edu.cn/pypi/web/simple
     export CRYPTOGRAPHY_DONT_BUILD_RUST=1
-    sudo pip3 install cryptography
-    sudo pip3 install  cffi>=1.12
-    sudo pip3 install  rust
-    sudo pip3 install paramiko
-    sudo pip3 install oauthlib
+    sudo pip3 install cryptography cffi paramiko oauthlib -i https://mirrors.ustc.edu.cn/pypi/web/simple
     #     python3 -m pip install xxxx
 
     # 本地化
