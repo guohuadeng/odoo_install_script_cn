@@ -64,12 +64,10 @@ INSTALL_WKHTMLTOPDF="True"
 O_FONT="https://www.sunpop.cn/download/microsoft.zip"
 # 默认 odoo 端口 8069，建议安装 nginx 做前端端口映射，这样才能使用 livechat
 O_PORT="8069"
-# 选择要安装的odoo版本，如: 13.0，12.0, 11.0, 10.0 或者 saas-18. 如果使用 'master' 则 master 分支将会安装
+# 选择要安装的odoo版本
 O_TYPE=""
-O_VERSION="13.0"
-O_COMMUNITY_LATEST_13="http://nightly.odoocdn.com/13.0/nightly/deb/odoo_13.0.latest_all.deb"
-O_COMMUNITY_LATEST_12="http://nightly.odoocdn.com/12.0/nightly/deb/odoo_12.0.latest_all.deb"
-O_COMMUNITY_LATEST_11="http://nightly.odoocdn.com/11.0/nightly/deb/odoo_11.0.latest_all.deb"
+O_VERSION="15.0"
+O_COMMUNITY_LATEST_15="http://nightly.odoocdn.com/15.0/nightly/deb/odoo_13.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
@@ -92,7 +90,7 @@ O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
 
 #--------------------------------------------------
 # 更新服务器，多数要人工干预，故可以注释
-# 升级服务器到 ubuntu 18，不需要可以注释
+# 升级服务器到 ubuntu 20，不需要可以注释
 #--------------------------------------------------
 # echo -e "\n---- Update Server ----"
 # apt install update-manager
@@ -111,14 +109,14 @@ O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
 function ConfirmPg()
 {
 	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
-	select selected in 'Postgresql 13.x [Recommend. OS default]' 'Postgresql 12' 'Postgresql 11' 'Postgresql 10' 'None'; do break; done;
+	select selected in 'Postgresql 14' 'Postgresql 13' 'Postgresql 12.x [Recommend. OS default]' 'None'; do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
 	ConfirmPg;
 }
 function ConfirmOdoo()
 {
 	echo -e "[Notice] Confirm Install - odoo 13 \nPlease select your odoo version: (1~9)"
-	select selected in 	'Odoo 13 Community from odoo.com 远程社区版' 'Odoo 13 Community from local[odoo_13.0.latest_all.deb] 本地社区版' 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版'	'Odoo 12 Community from odoo.com 远程社区版' 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版'	'Odoo 11 Community from odoo.com 远程社区版' 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版'  'None';
+	select selected in 	'Odoo 15 Community from odoo.com 远程社区版' 'Odoo 15 Community from local[odoo_15.0.latest_all.deb] 本地社区版' 'Odoo 15 Enterprise from local[odoo_15.0+e.latest_all.deb] 本地企业版' 'None';
 	do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmOdoo;
@@ -226,7 +224,7 @@ function InstallBase()
     sudo pip3 install xmltodict==0.11.0
     export CRYPTOGRAPHY_DONT_BUILD_RUST=1
     sudo pip3 install cryptography
-    sudo pip3 install  cffi>=1.12
+    sudo pip3 install  cffi
     sudo pip3 install  rust
     sudo pip3 install paramiko
     sudo pip3 install oauthlib
@@ -270,7 +268,7 @@ function InstallBase()
     # 安装 Wkhtmltopdf
     #--------------------------------------------------
     if [ $INSTALL_WKHTMLTOPDF = "True" ]; then
-      echo -e "\n---- Install wkhtml and place shortcuts on correct place for ODOO 12 ----"
+      echo -e "\n---- Install wkhtml and place shortcuts on correct place for ODOO ----"
       #pick up correct one from x64 & x32 versions:
       if [ "`getconf LONG_BIT`" == "64" ];then
           _url=$WKHTMLTOX_X64
@@ -310,7 +308,7 @@ function InstallBase()
     sudo echo "0  */2  * * *   root    /usr/sbin/ntpdate cn.pool.ntp.org >> /tmp/tmp.txt" >> /etc/crontab
 }
 #--------------------------------------------------
-# 安装 PostgreSQL Server 12, 11, 10
+# 安装 PostgreSQL Server 14, 13, 12
 #--------------------------------------------------
 function InstallPg()    {
 
@@ -318,29 +316,25 @@ function InstallPg()    {
         echo -e "\n---- Prepare Install $O_PG ----"
         sudo apt-get install curl ca-certificates -y
         sudo apt-get install -y wget ca-certificates
+        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
         sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
         echo -e "\n---- Installing Postgresql Server ----"
         sudo apt-key update
         sudo apt-get update
     fi;
 
-    if [ "$O_PG" == 'Postgresql 13.x [Recommend. OS default]' ]; then
+    if [ "$O_PG" == 'Postgresql 14' ]; then
+        sudo apt-get install postgresql-14 -y
+    fi;
+
+    if [ "$O_PG" == 'Postgresql 13' ]; then
+        sudo apt-get install postgresql-13 -y
+    fi;
+
+    if [ "$O_PG" == 'Postgresql 12.x [Recommend. OS default]' ]; then
         sudo apt-get install postgresql -y
         sudo apt-get install postgresql-contrib -y
-
-    if [ "$O_PG" == 'Postgresql 12' ]; then
-        sudo apt-get install postgresql-12 -y
-    fi;
-
-    if [ "$O_PG" == 'Postgresql 11' ]; then
-        sudo apt-get install postgresql-11 -y
-    fi;
-
-    if [ "$O_PG" == 'Postgresql 10' ]; then
-        sudo apt-get install postgresql-10 -y
-    fi;
     fi;
 }
 
@@ -351,36 +345,16 @@ function InstallOdoo()    {
     if [ "$O_TYPE" != 'None' ]; then
         echo -e "\n==== Installing $O_TYPE===="
     fi;
-    if [ "$O_TYPE" == 'Odoo 13 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST_13 -O odoo_13.0.latest_all.deb
+    if [ "$O_TYPE" == 'Odoo 15 Community from odoo.com 远程社区版' ]; then
+        sudo wget $O_COMMUNITY_LATEST_15 -O odoo_15.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
     fi;
-    if [ "$O_TYPE" == 'Odoo 13 Community from local[odoo_13.0.latest_all.deb] 本地社区版' ]; then
-        sudo dpkg -i $CURDIR/odoo_13.0.latest_all.deb;sudo apt-get -f -y install
+    if [ "$O_TYPE" == 'Odoo 15 Community from local[odoo_15.0.latest_all.deb] 本地社区版' ]; then
+        sudo dpkg -i $CURDIR/odoo_15.0.latest_all.deb;sudo apt-get -f -y install
     fi;
-    if [ "$O_TYPE" == 'Odoo 13 Enterprise from local[odoo_13.0+e.latest_all.deb] 本地企业版' ]; then
-        sudo dpkg -i $CURDIR/odoo_13.0+e.latest_all.deb;sudo apt-get -f -y install
-#        sudo dpkg -i odoo_13.0+e.latest_all.deb;sudo apt-get -f -y install
-    fi;
-    if [ "$O_TYPE" == 'Odoo 12 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST -O odoo_12.0.latest_all.deb
-        sudo gdebi --n `basename $O_COMMUNITY_LATEST`
-    fi;
-    if [ "$O_TYPE" == 'Odoo 12 Community from local[odoo_12.0.latest_all.deb] 本地社区版' ]; then
-        sudo dpkg -i $CURDIR/odoo_12.0.latest_all.deb;sudo apt-get -f -y install
-    fi;
-    if [ "$O_TYPE" == 'Odoo 12 Enterprise from local[odoo_12.0+e.latest_all.deb] 本地企业版' ]; then
-        sudo dpkg -i $CURDIR/odoo_12.0+e.latest_all.deb;sudo apt-get -f -y install
-    fi;
-    if [ "$O_TYPE" == 'Odoo 11 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST_11 -O odoo_11.0.latest_all.deb
-        sudo gdebi --n `basename $O_COMMUNITY_LATEST_11`
-    fi;
-    if [ "$O_TYPE" == 'Odoo 11 Community from local[odoo_11.0.latest_all.deb] 本地社区版' ]; then
-        sudo dpkg -i $CURDIR/odoo_11.0.latest_all.deb;sudo apt-get -f -y install
-    fi;
-    if [ "$O_TYPE" == 'Odoo 11 Enterprise from local[odoo_11.0+e.latest_all.deb] 本地企业版' ]; then
-        sudo dpkg -i $CURDIR/odoo_11.0+e.latest_all.deb;sudo apt-get -f -y install
+    if [ "$O_TYPE" == 'Odoo 15 Enterprise from local[odoo_15.0+e.latest_all.deb] 本地企业版' ]; then
+        sudo dpkg -i $CURDIR/odoo_15.0+e.latest_all.deb;sudo apt-get -f -y install
+#        sudo dpkg -i odoo_15.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
 
     if [ "$O_TYPE" != 'None' ]; then
