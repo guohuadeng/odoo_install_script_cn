@@ -210,12 +210,12 @@ function InstallBase()
     sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
     sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
 
-    sudo pip3 install  num2words scss libsass polib
+    sudo pip3 install   scss libsass polib
     sudo pip3 install python-Levenshtein
     sudo pip3 install python-barcode
     sudo pip3 install vobject qrcode pycrypto
     # 注意，xlrd 1.2.0才支持xlsx，其它高版本只支持xls
-    sudo pip3 install phonenumbers xlwt xlsxwriter xlrd==1.2.0 pyldap rsa zxcvbn -i https://mirrors.ustc.edu.cn/pypi/web/simple
+    sudo pip3 install phonenumbers num2words xlwt xlsxwriter xlrd==1.2.0 pyldap rsa zxcvbn -i https://mirrors.ustc.edu.cn/pypi/web/simple
 #    sudo pip3 install firebase_admin
     # 中文分词
     sudo pip3 install jieba
