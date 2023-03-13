@@ -79,7 +79,7 @@ O_SUPERADMIN="admin"
 # 设置 odoo 配置文件名
 O_CONFIG="${O_USER}"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
-WKHTMLTOX_X64="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb"
+WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
 WKHTMLTOX_X32="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
 # LibPng处理，主要是 U18的bug
 LIBPNG_X64="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
@@ -149,39 +149,34 @@ function InstallBase()
     rm odoo_install*
     rm wkhtmltox*
     sudo apt-get update
-    sudo apt-get install aptitude
+    sudo apt upgrade
+    # 本地化
+    sudo apt-get install aptitude -y;sudo aptitude install -y locales
 
 
     echo -e "\n--- Installing Python 3 + pip3 --"
-    sudo apt-get install python3 python3-pip python3-polib -y
-    sudo apt-get install python-dev python3-wheel gdebi -y
+#    begin o16 基本
+    sudo apt install git wget nodejs npm python3 build-essential libzip-dev python3-dev libxslt1-dev python3-pip libldap2-dev libsasl2-dev -y
+    sudo apt install python3-wheel python3-venv python3-setuptools node-less libjpeg-dev xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig -y
+#    end o16 基本
+    sudo apt-get install python3-polib gdebi -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
     sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
-    sudo apt-get install python3-psycopg2 -y
     sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
     sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap -y
-    sudo apt-get install python3-mock -y
-    sudo apt-get install python3-psutil -y
-    sudo apt-get install python3-xlwt -y
+    sudo apt-get install python3-xlwt python3-xlsxwriter -y
     sudo apt-get install fonts-inconsolata -y
     sudo apt-get install fonts-font-awesome -y
     sudo apt-get install fonts-roboto-unhinted -y
     # 要注意版本，3.6.x 用 2=2.7.4-1
-    sudo apt-get install  python3-psycopg2=2.7.4-1 -y
-    sudo apt-get install  python3-passlib -y
-    sudo apt-get install  python3-ofxparse -y
-    sudo apt-get install python3-vobject -y
-    sudo apt-get install python3-zeep -y
-    sudo apt-get install python3-pyldap -y
-    sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-xlsxwriter python3-suds python3-xlrd -y
-    sudo apt-get install libldap2-dev libsasl2-dev -y
+    sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-suds -y
+    sudo apt-get install libldap2-dev -y
     # nginx 源码安装的支持
     sudo apt-get install libpcre3 libpcre3-dev -y
     sudo apt-get install zlib1g-dev -y
     sudo apt-get install openssl -y
     sudo apt-get install libssl-dev -y
-    sudo apt-get install phthon3-phonenumbers -y
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
@@ -206,7 +201,6 @@ function InstallBase()
     sudo pip3 install python-Levenshtein
     sudo pip3 install python-barcode
     sudo pip3 install vobject qrcode pycrypto
-    sudo pip3 install xlwt xlsxwriter
     # 注意，1.2.0才支持xlsx，其它高版本只支持xls
     sudo pip3 install xlrd==1.2.0
     sudo pip3 install pyldap
@@ -232,8 +226,6 @@ function InstallBase()
     sudo pip3 install pdfminer
     #     python3 -m pip install xxxx
 
-    # 本地化
-    sudo apt-get install aptitude -y;sudo aptitude install -y locales
     # 设置时区，默认先不设置，因为有时是境外主机
     # sudo timedatectl set-timezone "Asia/Shanghai"
     # sudo timedatectl set-timezone "America/New_York"
@@ -271,18 +263,11 @@ function InstallBase()
     #--------------------------------------------------
     if [ $INSTALL_WKHTMLTOPDF = "True" ]; then
       echo -e "\n---- Install wkhtml and place shortcuts on correct place for ODOO ----"
-      #pick up correct one from x64 & x32 versions:
-      if [ "`getconf LONG_BIT`" == "64" ];then
-          _url=$WKHTMLTOX_X64
-      else
-          _url=$WKHTMLTOX_X32
-      fi
-      sudo wget $_url
-      sudo gdebi --n `basename $_url`
-#      sudo wget https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb
-#      sudo dpkg -i wkhtmltox_0.12.5-1.trusty_amd64.deb
-      sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
-      sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
+      sudo apt-get install xvfb
+      sudo apt-get install wkhtmltopdf
+
+#      sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
+#      sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
     else
       echo "Wkhtmltopdf isn't installed due to the choice of the user!"
     fi
@@ -382,6 +367,7 @@ function InstallOdoo()    {
         sudo mkdir /usr/lib/python3/dist-packages/odoo/myaddons
         sudo mkdir /usr/lib/python3/dist-packages/odoo/mytheme
         sudo mkdir /usr/lib/python3/dist-packages/odoo/backups
+        sudo chown -R odoo:odoo /var/log/odoo
         sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/odoofile/
         sudo chown -R odoo:odoo /usr/lib/python3/dist-packages/odoo/backups/
         sudo chmod -R 755 /usr/lib/python3/dist-packages/odoo/odoofile

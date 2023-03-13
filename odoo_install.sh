@@ -277,6 +277,7 @@ function InstallBase()
       sudo gdebi --n `basename $_url`
 #      sudo wget https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty_amd64.deb
 #      sudo dpkg -i wkhtmltox_0.12.5-1.trusty_amd64.deb
+#       sudo apt-get -f -y install
       sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
       sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
     else
