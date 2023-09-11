@@ -5,22 +5,22 @@ clear;
 
 CopyrightLogo='
 ==========================================================================
-# 最近更新：2021-11-11
+# 最近更新：2023-09-04
 # 支持版本 Ubuntu 20
 # 支持版本 python版本跟随操作系统，Ubuntu 20(Python3.8.10)
 # 作者: Ivan Deng
-# 支持: https://www.sunpop.cn
+# 支持: https://www.odooai.cn
 #-------------------------------------------------------------------------------
 # 本脚本将安装Odoo到你的服务器上，一般而言，整个过程在3~5分钟完成
 # 为使中文设置生效，建议重启一下机器。 执行 reboot
 #-------------------------------------------------------------------------------
 # 使用方法，直接在主机上执行以下指令
-# wget https://www.sunpop.cn/download/odoo_install_15.sh && bash odoo_install_15.sh 2>&1 | tee odoo.log
+# wget https://www.odooai.cn/download/odoo_install_16.sh && bash odoo_install_16.sh 2>&1 | tee odoo.log
 #-------------------------------------------------------------------------------
 # (1) 选择要安装的类型
-# 1为从odoo官网安装odoo15，2为安装本地社区版odoo15，3为安装本地企业版odoo15(请联系购买)
-# 选择2时请确保 odoo_15.0.latest_all.deb 已上传至当前目录
-# 选择3时请确保 odoo_15.0+e.latest_all.deb 已上传至当前目录
+# 1为从odoo官网安装odoo16，2为安装本地社区版odoo16，3为安装本地企业版odoo16(请联系购买)
+# 选择2时请确保 odoo_16.0.latest_all.deb 已上传至当前目录
+# 选择3时请确保 odoo_16.0+e.latest_all.deb 已上传至当前目录
 # (2) 选择要安装的Postgresql 数据库
 # 数据库安装上，当前 ubuntu 20 默认已经是安装 Postgresql 12
 # 选择 PG14 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
@@ -39,7 +39,7 @@ CopyrightLogo='
 # 7. odoo访问地址为(用你的域名代替 yourserver.com) http://yourserver.com 或者http://yourserver.com:8069
 # 8. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
 # 9. 使用最新的pdf打印组件wkhtmltox 0.12.5 版本，打印更清晰
-# 10.增加python库，主要支持企业版中 ical, ldap, esc/pos，参考 https://www.odoo.com/documentation/15.0/administration/install/install.html
+# 10.增加python库，主要支持企业版中 ical, ldap, esc/pos，参考 https://www.odooai.cn/documentation/16.0/zh_CN/administration/install/install.html
 #-------------------------------------------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
 #-------------------------------------------------------------------------------
@@ -61,13 +61,13 @@ O_HOME_EXT="/$O_USER/${O_USER}-server"
 # 安装 WKHTMLTOPDF，默认设置为 True ，如果已安装则设置为 False.
 INSTALL_WKHTMLTOPDF="True"
 # 中文字体相关
-O_FONT="https://www.sunpop.cn/download/microsoft.zip"
+O_FONT="https://www.odooai.cn/download/microsoft.zip"
 # 默认 odoo 端口 8069，建议安装 nginx 做前端端口映射，这样才能使用 livechat
 O_PORT="8069"
 # 选择要安装的odoo版本
 O_TYPE=""
-O_VERSION="15.0"
-O_COMMUNITY_LATEST_15="http://nightly.odoocdn.com/15.0/nightly/deb/odoo_13.0.latest_all.deb"
+O_VERSION="16.0"
+O_COMMUNITY_LATEST_16="http://nightly.odoocdn.com/16.0/nightly/deb/odoo_16.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
@@ -80,13 +80,13 @@ O_SUPERADMIN="admin"
 O_CONFIG="${O_USER}"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
 WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
-WKHTMLTOX_X32="https://www.sunpop.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
+WKHTMLTOX_X32="https://www.odooai.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
 # LibPng处理，主要是 U18的bug
-LIBPNG_X64="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
-LIBPNG_X32="https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
-# odoo.conf 下载链接，将使用 sunpop.cn的
-O_CONF_FILE="https://www.sunpop.cn/download/odoo.conf"
-O_NGINX_CONF_FILE="https://www.sunpop.cn/download/nginx.conf"
+LIBPNG_X64="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
+LIBPNG_X32="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
+# odoo.conf 下载链接，将使用 odooai.cn的
+O_CONF_FILE="https://www.odooai.cn/download/odoo.conf"
+O_NGINX_CONF_FILE="https://www.odooai.cn/download/nginx.conf"
 
 #--------------------------------------------------
 # 更新服务器，多数要人工干预，故可以注释
@@ -115,8 +115,8 @@ function ConfirmPg()
 }
 function ConfirmOdoo()
 {
-	echo -e "[Notice] Confirm Install - odoo 13 \nPlease select your odoo version: (1~9)"
-	select selected in 	'Odoo 15 Community from odoo.com 远程社区版' 'Odoo 15 Community from local[odoo_15.0.latest_all.deb] 本地社区版' 'Odoo 15 Enterprise from local[odoo_15.0+e.latest_all.deb] 本地企业版' 'None';
+	echo -e "[Notice] Confirm Install - odoo 16 \nPlease select your odoo version: (1~9)"
+	select selected in 	'Odoo 16 Community from odoo.com 远程社区版' 'Odoo 16 Community from local[odoo_16.0.latest_all.deb] 本地社区版' 'Odoo 16 Enterprise from local[odoo_16.0+e.latest_all.deb] 本地企业版' 'None';
 	do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmOdoo;
@@ -209,7 +209,7 @@ function InstallBase()
 #    sudo pip3 install firebase_admin
     # 中文分词
     sudo pip3 install jieba
-    # odoo13 企业版
+    # odoo16 企业版
     sudo pip3 install zeep
     # 微信与阿里
     sudo pip3 install wechatpy python-alipay-sdk pycryptodome
@@ -252,8 +252,8 @@ function InstallBase()
           _url=$LIBPNG_X32
       fi
       sudo wget $_url
-#      sudo wget https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
-#      sudo gdebi --n `basename https://www.sunpop.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb`
+#      sudo wget https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
+#      sudo gdebi --n `basename https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb`
       sudo gdebi --n `basename $_url`
       echo "libpng-12 is installed."
     fi
@@ -280,7 +280,7 @@ function InstallBase()
     sudo rm -rf /usr/share/fonts/truetype/microsoft
     sudo mkdir /usr/share/fonts/truetype/microsoft
     sudo wget -x -q $O_FONT -O /usr/share/fonts/truetype/microsoft/microsoft.zip
-#    sudo wget -x -q https://www.sunpop.cn/download/microsoft.zip -O /usr/share/fonts/truetype/microsoft/microsoft.zip
+#    sudo wget -x -q https://www.odooai.cn/download/microsoft.zip -O /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo unzip -q -d /usr/share/fonts/truetype/microsoft /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo rm /usr/share/fonts/truetype/microsoft/microsoft.zip
     sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft && sudo chmod -R 0755 /usr/share/fonts/truetype/microsoft/*
@@ -332,22 +332,22 @@ function InstallOdoo()    {
     if [ "$O_TYPE" != 'None' ]; then
         echo -e "\n==== Installing $O_TYPE===="
     fi;
-    if [ "$O_TYPE" == 'Odoo 15 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST_15 -O odoo_15.0.latest_all.deb
+    if [ "$O_TYPE" == 'Odoo 16 Community from odoo.com 远程社区版' ]; then
+        sudo wget $O_COMMUNITY_LATEST_16 -O odoo_16.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
     fi;
-    if [ "$O_TYPE" == 'Odoo 15 Community from local[odoo_15.0.latest_all.deb] 本地社区版' ]; then
-        sudo dpkg -i $CURDIR/odoo_15.0.latest_all.deb;sudo apt-get -f -y install
+    if [ "$O_TYPE" == 'Odoo 16 Community from local[odoo_16.0.latest_all.deb] 本地社区版' ]; then
+        sudo dpkg -i $CURDIR/odoo_16.0.latest_all.deb;sudo apt-get -f -y install
     fi;
-    if [ "$O_TYPE" == 'Odoo 15 Enterprise from local[odoo_15.0+e.latest_all.deb] 本地企业版' ]; then
-        sudo dpkg -i $CURDIR/odoo_15.0+e.latest_all.deb;sudo apt-get -f -y install
-#        sudo dpkg -i odoo_15.0+e.latest_all.deb;sudo apt-get -f -y install
+    if [ "$O_TYPE" == 'Odoo 16 Enterprise from local[odoo_16.0+e.latest_all.deb] 本地企业版' ]; then
+        sudo dpkg -i $CURDIR/odoo_16.0+e.latest_all.deb;sudo apt-get -f -y install
+#        sudo dpkg -i odoo_16.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
 
     if [ "$O_TYPE" != 'None' ]; then
         # 下载个性化配置文件，将odoo用户加至管理组（方便，如有更高安全要求可另行处理）
         sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
-    #    sudo wget -x -q https://www.sunpop.cn/download/odoo.conf -O /etc/odoo/odoo.conf
+    #    sudo wget -x -q https://www.odooai.cn/download/odoo.conf -O /etc/odoo/odoo.conf
         sudo usermod -a -G root odoo
         # 处理附加模块, npm
         sudo apt-get install npm -y
@@ -412,7 +412,7 @@ function InstallDone()    {
     echo "Or: sudo bash /root/r.sh"
     echo "Please Reboot the server to make chinese setting effective."
     echo "Please visit our website to get more detail."
-    echo "https://www.sunpop.cn"
+    echo "https://www.odooai.cn"
     echo "-----------------------------------------------------------"
 }
 
