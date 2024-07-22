@@ -15,7 +15,7 @@ CopyrightLogo='
 # 为使中文设置生效，建议重启一下机器。 执行 reboot
 #-------------------------------------------------------------------------------
 # 使用方法，直接在主机上执行以下指令
-# wget https://www.odooai.cn/download/odoo_install_16.sh && bash odoo_install_16.sh 2>&1 | tee odoo.log
+# wget https://www.odooai.cn/download/odoo_install_16.sh && bash odoo_install_16.sh 2>&1 | tee odoo_install.log
 #-------------------------------------------------------------------------------
 # (1) 选择要安装的类型
 # 1为从odoo官网安装odoo16，2为安装本地社区版odoo16，3为安装本地企业版odoo16(请联系购买)
@@ -212,7 +212,7 @@ function InstallBase()
     # odoo16 企业版
     sudo pip3 install zeep
     # 微信与阿里
-    sudo pip3 install wechatpy python-alipay-sdk pycryptodome
+    sudo pip3 install wechatpy==1.8.18 python-alipay-sdk pycryptodome alipay-sdk-python==3.6.778
     sudo pip3 install itsdangerous==0.24
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
@@ -223,7 +223,8 @@ function InstallBase()
     sudo pip3 install paramiko
     sudo pip3 install oauthlib
     # odoo16 增加
-    sudo pip3 install pdfminer
+    sudo pip3 install pdfminer openai
+    sudo pip3 install dashscope
     #     python3 -m pip install xxxx
 
     # 设置时区，默认先不设置，因为有时是境外主机
