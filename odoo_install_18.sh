@@ -21,7 +21,7 @@ CopyrightLogo='
 # 选择2时请确保 odoo_18.0.latest_all.deb 已上传至当前目录
 # 选择3时请确保 odoo_18.0+e.latest_all.deb 已上传至当前目录
 # (2) 选择要安装的Postgresql 数据库
-# 数据库安装上，当前 ubuntu 20 默认已经是安装 Postgresql 12
+# 数据库安装上，当前 ubuntu 24 默认已经是安装 Postgresql 16
 # 选择 PG14 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
 # (3) 选择是否要安装Nginx
 # 安装Nginx则可直接使用80端口访问odoo，同时可使用网站即时通讯。
@@ -83,6 +83,7 @@ WKHTMLTOX_X32="https://www.odooai.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb
 # LibPng处理，主要是 U18的bug
 LIBPNG_X64="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
 LIBPNG_X32="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
+O_R_FILE="https://www.odooai.cn/download/r18.txt"
 # odoo.conf 下载链接，将使用 odooai.cn的
 O_CONF_FILE="https://www.odooai.cn/download/odoo.conf"
 O_NGINX_CONF_FILE="https://www.odooai.cn/download/nginx.conf"
@@ -108,14 +109,14 @@ O_NGINX_CONF_FILE="https://www.odooai.cn/download/nginx.conf"
 function ConfirmPg()
 {
 	echo -e "[Notice] Confirm Install - Postgresql \nPlease select your version: "
-	select selected in 'Postgresql 14' 'Postgresql 13' 'Postgresql 12.x [Recommend. OS default]' 'None'; do break; done;
+	select selected in 'Postgresql 16[Recommend. OS default]' 'Postgresql 13' 'Postgresql 12.x' 'None'; do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_PG=$selected && return 0;
 	ConfirmPg;
 }
 function ConfirmOdoo()
 {
-	echo -e "[Notice] Confirm Install - odoo 16 \nPlease select your odoo version: (1~9)"
-	select selected in 	'Odoo 16 Community from odoo.com 远程社区版' 'Odoo 16 Community from local[odoo_18.0.latest_all.deb] 本地社区版' 'Odoo 16 Enterprise from local[odoo_18.0+e.latest_all.deb] 本地企业版' 'None';
+	echo -e "[Notice] Confirm Install - Odoo 18 \nPlease select your odoo version: (1~9)"
+	select selected in 	'Odoo 18 Community from odoo.com 远程社区版' 'Odoo 18 Community from local[odoo_18.0.latest_all.deb] 本地社区版' 'Odoo 18 Enterprise from local[odoo_18.0+e.latest_all.deb] 本地企业版' 'None';
 	do break; done;
 	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_TYPE=$selected && return 0;
 	ConfirmOdoo;
@@ -145,19 +146,18 @@ function InstallBase()
     # 注意，更新pip 后，可以直接pip，不要pip3
     sudo pip3 install --upgrade pip
     # 删除旧文件，更新源
-    rm odoo_install*
     rm wkhtmltox*
     sudo apt-get update
-    sudo apt upgrade
+    sudo apt upgrade -y
     # 本地化
-    sudo apt-get install aptitude -y;sudo aptitude install -y locales
+    # sudo apt-get install aptitude -y;sudo aptitude install -y locales
 
 
     echo -e "\n--- Installing Python 3 + pip3 --"
-#    begin o16 基本
+#    begin o18 基本
     sudo apt install git wget nodejs npm python3 build-essential libzip-dev python3-dev libxslt1-dev python3-pip libldap2-dev libsasl2-dev -y
     sudo apt install python3-wheel python3-venv python3-setuptools node-less libjpeg-dev xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig -y
-#    end o16 基本
+#    end o18 基本
     sudo apt-get install python3-polib gdebi -y
     sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
     sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
@@ -224,6 +224,10 @@ function InstallBase()
     # odoo18 增加
     sudo pip3 install pdfminer openai
     sudo pip3 install dashscope
+    echo -e "\n--- Install Lib from Odoo 18 official list"
+    # 下载 r18.txt 文件并安装
+    sudo wget -x -q $O_R_FILE -O r18.txt
+    sudo pip3 install -r r18.txt
     #     python3 -m pip install xxxx
 
     # 设置时区，默认先不设置，因为有时是境外主机
@@ -237,7 +241,6 @@ function InstallBase()
     sudo apt-get install ntpdate -y
     # 设置系统时间与网络时间同步
     ntpdate cn.pool.ntp.org
-    sudo ntpdate 10.76.244.160
     # 将系统时间写入硬件时间
     sudo hwclock --systohc
     #--------------------------------------------------
@@ -263,8 +266,8 @@ function InstallBase()
     #--------------------------------------------------
     if [ $INSTALL_WKHTMLTOPDF = "True" ]; then
       echo -e "\n---- Install wkhtml and place shortcuts on correct place for ODOO ----"
-      sudo apt-get install xvfb
-      sudo apt-get install wkhtmltopdf
+      sudo apt-get install xvfb -y
+      sudo apt-get install wkhtmltopdf -y
 
 #      sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
 #      sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
@@ -311,15 +314,15 @@ function InstallPg()    {
         sudo apt-get update
     fi;
 
-    if [ "$O_PG" == 'Postgresql 14' ]; then
-        sudo apt-get install postgresql-14 -y
+    if [ "$O_PG" == 'Postgresql 16[Recommend. OS default]' ]; then
+        sudo apt-get install postgresql-16 postgresql-client -y
     fi;
 
     if [ "$O_PG" == 'Postgresql 13' ]; then
         sudo apt-get install postgresql-13 -y
     fi;
 
-    if [ "$O_PG" == 'Postgresql 12.x [Recommend. OS default]' ]; then
+    if [ "$O_PG" == 'Postgresql 12.x' ]; then
         sudo apt-get install postgresql -y
         sudo apt-get install postgresql-contrib -y
     fi;
@@ -332,14 +335,14 @@ function InstallOdoo()    {
     if [ "$O_TYPE" != 'None' ]; then
         echo -e "\n==== Installing $O_TYPE===="
     fi;
-    if [ "$O_TYPE" == 'Odoo 16 Community from odoo.com 远程社区版' ]; then
+    if [ "$O_TYPE" == 'Odoo 18 Community from odoo.com 远程社区版' ]; then
         sudo wget $O_COMMUNITY_LATEST_16 -O odoo_18.0.latest_all.deb
         sudo gdebi --n `basename $O_COMMUNITY_LATEST`
     fi;
-    if [ "$O_TYPE" == 'Odoo 16 Community from local[odoo_18.0.latest_all.deb] 本地社区版' ]; then
+    if [ "$O_TYPE" == 'Odoo 18 Community from local[odoo_18.0.latest_all.deb] 本地社区版' ]; then
         sudo dpkg -i $CURDIR/odoo_18.0.latest_all.deb;sudo apt-get -f -y install
     fi;
-    if [ "$O_TYPE" == 'Odoo 16 Enterprise from local[odoo_18.0+e.latest_all.deb] 本地企业版' ]; then
+    if [ "$O_TYPE" == 'Odoo 18 Enterprise from local[odoo_18.0+e.latest_all.deb] 本地企业版' ]; then
         sudo dpkg -i $CURDIR/odoo_18.0+e.latest_all.deb;sudo apt-get -f -y install
 #        sudo dpkg -i odoo_18.0+e.latest_all.deb;sudo apt-get -f -y install
     fi;
