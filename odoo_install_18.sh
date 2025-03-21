@@ -30,8 +30,8 @@ CopyrightLogo='
 # 本脚本执行完成后，您将得到
 #-------------------------------------------------------------------------------
 # 1. 中文字体，PDF报表，时间同步，SCSS编译等odoo支持组件
-# 2. postgres 14 安装在 /usr/lib/postgresql/14
-# 3. postgres 14 配置在 /etc/postgresql/14/main
+# 2. postgres 16 安装在 /usr/lib/postgresql/16
+# 3. postgres 16 配置在 /etc/postgresql/16/main
 # 4. odoo 最新版 安装在 /usr/lib/python3/dist-packages/odoo
 # 5. odoo 配置文件位于 /etc/odoo/odoo.conf
 # 6. Nginx 作为反向代理，开启了多worker工作模式，可使用odoo在线即时通讯
