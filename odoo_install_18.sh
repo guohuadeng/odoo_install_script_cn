@@ -150,7 +150,7 @@ function InstallBase()
     sudo apt-get update
     sudo apt upgrade -y
     # 本地化
-    # sudo apt-get install aptitude -y;sudo aptitude install -y locales
+    sudo apt-get install aptitude -y;sudo aptitude install -y locales
 
 
     echo -e "\n--- Installing Python 3 + pip3 --"
@@ -216,7 +216,6 @@ function InstallBase()
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
     export CRYPTOGRAPHY_DONT_BUILD_RUST=1
-    sudo pip3 install cryptography
     sudo pip3 install  cffi
     sudo pip3 install  rust
     sudo pip3 install paramiko
@@ -228,6 +227,13 @@ function InstallBase()
     # 下载 r18.txt 文件并安装
     sudo wget -x -q $O_R_FILE -O r18.txt
     sudo pip3 install -r r18.txt
+    sudo pip3 install paddlepaddle==2.6.2
+    sudo pip3 install paddleocr==2.9.1
+    sudo pip3 install diskcache==5.6.3
+    sudo pip3 install bardapi==1.0.0
+    sudo pip3 install numpy==1.26.4 --upgrade
+    sudo pip3 install pyOpenSSL==21.0.0 --upgrade
+    sudo pip3 install cryptography==3.4.8 --upgrade
     #     python3 -m pip install xxxx
 
     # 设置时区，默认先不设置，因为有时是境外主机
