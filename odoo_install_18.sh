@@ -216,7 +216,6 @@ function InstallBase()
     sudo pip3 install kdniao==0.1.2
     sudo pip3 install xmltodict==0.11.0
     export CRYPTOGRAPHY_DONT_BUILD_RUST=1
-    sudo pip3 install cryptography
     sudo pip3 install  cffi
     sudo pip3 install  rust
     sudo pip3 install paramiko
@@ -224,6 +223,13 @@ function InstallBase()
     # odoo18 增加
     sudo pip3 install pdfminer openai
     sudo pip3 install dashscope
+    sudo pip3 install paddlepaddle==2.6.2
+    sudo pip3 install paddleocr==2.9.1
+    sudo pip3 install diskcache==5.6.3
+    sudo pip3 install bardapi==1.0.0
+    sudo pip3 install numpy==1.26.4 --upgrade
+    sudo pip3 install pyOpenSSL==21.0.0 --upgrade
+    sudo pip3 install cryptography==3.4.8 --upgrade
     #     python3 -m pip install xxxx
 
     # 设置时区，默认先不设置，因为有时是境外主机
