@@ -144,7 +144,6 @@ function InstallBase()
     # 如果是 centos 执行
     # yum install apt
     # 注意，更新pip 后，可以直接pip，不要pip3
-    sudo pip3 install --upgrade pip
     # 删除旧文件，更新源
     rm wkhtmltox*
     sudo apt-get update
@@ -158,82 +157,63 @@ function InstallBase()
     sudo apt install git wget nodejs npm python3 build-essential libzip-dev python3-dev libxslt1-dev python3-pip libldap2-dev libsasl2-dev -y
     sudo apt install python3-wheel python3-venv python3-setuptools node-less libjpeg-dev xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig -y
 #    end o18 基本
-    sudo apt-get install python3-polib gdebi -y
-    sudo apt-get install python3-babel python3-dateutil python3-decorator python3-docutils python3-feedparser python3-gevent python3-html2text -y
-    sudo apt-get install python3-jinja2 python3-libsass python3-lxml python3-mako -y
-    sudo apt-get install python3-mock python3-ofxparse python3-passlib python3-psutil python3-psycopg2 -y
-    sudo apt-get install python3-pydot python3-pyparsing python3-pypdf2 python3-reportlab -y
-    sudo apt-get install python3-qrcode python3-vobject  python3-zeep  python3-pyldap -y
-    sudo apt-get install python3-xlwt python3-xlsxwriter -y
+    sudo apt-get install gdebi gdebi-core -y
+    sudo apt-get install python3-feedparser python3-html2text -y
+    sudo apt-get install python3-mako -y
+    sudo apt-get install python3-mock -y
+    sudo apt-get install python3-pyparsing -y
     sudo apt-get install fonts-inconsolata -y
     sudo apt-get install fonts-font-awesome -y
     sudo apt-get install fonts-roboto-unhinted -y
-    # 要注意版本，3.6.x 用 2=2.7.4-1
-    sudo apt-get install python3-serial python3-usb python3-vatnumber python3-werkzeug python3-suds -y
-    sudo apt-get install libldap2-dev -y
+    sudo apt-get install python3-vatnumber python3-suds -y
     # nginx 源码安装的支持
     sudo apt-get install libpcre3 libpcre3-dev -y
     sudo apt-get install zlib1g-dev -y
-    sudo apt-get install openssl -y
-    sudo apt-get install libssl-dev -y
 
     echo -e "\n---- Install tool packages ----"
     # 要单独执行，因为 u16和u18有些包不同，放一个语句容易出错
     sudo apt-get install sntp -y
     sudo apt-get install git -y
     sudo apt-get install bzr -y
-    sudo apt-get install gdebi-core -y
     sudo apt-get install xfonts-base xfonts-75dpi -y
 
     echo -e "\n--- Install other required packages"
     sudo apt-get install node-clean-css -y
     sudo apt-get install node-less -y
-    sudo apt-get install python-gevent -y
-    sudo apt-get install libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libpq-dev libpng-dev libjpeg-dev xz-utils -y
     # 中文字体
     sudo apt-get install xfonts-utils -y
     sudo apt-get install unzip -y
     sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
     sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
 
-    sudo pip3 install phonenumbers num2words scss libsass polib
-    sudo pip3 install python-Levenshtein
-    sudo pip3 install python-barcode
-    sudo pip3 install vobject qrcode pycrypto
-    # 注意，1.2.0才支持xlsx，其它高版本只支持xls
-    sudo pip3 install xlrd==1.2.0
-    sudo pip3 install pyldap
-    sudo pip3 install rsa
-    sudo pip3 install zxcvbn
-#    sudo pip3 install firebase_admin
-    # 中文分词
-    sudo pip3 install jieba
-    # odoo18 企业版
-    sudo pip3 install zeep
-    # 微信与阿里
-    sudo pip3 install wechatpy==1.8.18 python-alipay-sdk pycryptodome alipay-sdk-python==3.6.778
-    sudo pip3 install itsdangerous==0.24
-    sudo pip3 install kdniao==0.1.2
-    sudo pip3 install xmltodict==0.11.0
+    pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+    pip3 install phonenumbers
+    pip3 install python-Levenshtein
+    pip3 install rsa
+    pip3 install zxcvbn
+    pip3 install jieba
+    pip3 install wechatpy==1.8.18 python-alipay-sdk pycryptodome alipay-sdk-python==3.6.778
+    pip3 install itsdangerous==0.24
+    pip3 install xmltodict==0.11.0
+
     export CRYPTOGRAPHY_DONT_BUILD_RUST=1
-    sudo pip3 install  cffi
-    sudo pip3 install  rust
-    sudo pip3 install paramiko
-    sudo pip3 install oauthlib
-    # odoo18 增加
-    sudo pip3 install pdfminer openai
-    sudo pip3 install dashscope
+    pip3 install cffi
+    pip3 install rust
+    pip3 install paramiko
+    pip3 install oauthlib
+    pip3 install pdfminer openai
+    pip3 install dashscope
+    pip3 install paddlepaddle==2.6.2
+    pip3 install paddleocr==2.9.1
+    pip3 install diskcache==5.6.3
+    pip3 install bardapi==1.0.0
+    pip3 install numpy==1.26.4
+    pip3 install xlsxwriter
+    pip3 install sqlparse
     echo -e "\n--- Install Lib from Odoo 18 official list"
     # 下载 r18.txt 文件并安装
-    sudo wget -x -q $O_R_FILE -O r18.txt
-    sudo pip3 install -r r18.txt
-    sudo pip3 install paddlepaddle==2.6.2
-    sudo pip3 install paddleocr==2.9.1
-    sudo pip3 install diskcache==5.6.3
-    sudo pip3 install bardapi==1.0.0
-    sudo pip3 install numpy==1.26.4 --upgrade
-    sudo pip3 install pyOpenSSL==21.0.0 --upgrade
-    sudo pip3 install cryptography==3.4.8 --upgrade
+    wget -x -q $O_R_FILE -O r18.txt
+    pip3 install -r r18.txt
     #     python3 -m pip install xxxx
 
     # 设置时区，默认先不设置，因为有时是境外主机
