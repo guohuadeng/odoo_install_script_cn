@@ -79,7 +79,7 @@ O_SUPERADMIN="admin"
 O_CONFIG="${O_USER}"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
 WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
-WKHTMLTOX_X32="https://www.odooai.cn/download/wkhtmltox_0.12.5-1.trusty-i386.deb"
+WKHTMLTOX_X32="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_i386.deb"
 # LibPng处理，主要是 U18的bug
 LIBPNG_X64="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
 LIBPNG_X32="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
@@ -187,29 +187,9 @@ function InstallBase()
     sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
 
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-    pip3 install phonenumbers
-    pip3 install python-Levenshtein
-    pip3 install rsa
-    pip3 install zxcvbn
-    pip3 install jieba
-    pip3 install wechatpy==1.8.18 python-alipay-sdk pycryptodome alipay-sdk-python==3.6.778
-    pip3 install itsdangerous==0.24
-    pip3 install xmltodict==0.11.0
+    # 额外的库，自行处理
+    echo -e "\n--- Install Extralib Lib from requirements_ai18_u.txt"
 
-    export CRYPTOGRAPHY_DONT_BUILD_RUST=1
-    pip3 install cffi
-    pip3 install rust
-    pip3 install paramiko
-    pip3 install oauthlib
-    pip3 install pdfminer openai
-    pip3 install dashscope
-    pip3 install paddlepaddle==2.6.2
-    pip3 install paddleocr==2.9.1
-    pip3 install diskcache==5.6.3
-    pip3 install bardapi==1.0.0
-    pip3 install numpy==1.26.4
-    pip3 install xlsxwriter
-    pip3 install sqlparse
     echo -e "\n--- Install Lib from Odoo 18 official list"
     # 下载 r18.txt 文件并安装
     wget -x -q $O_R_FILE -O r18.txt
