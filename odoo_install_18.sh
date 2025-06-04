@@ -37,8 +37,8 @@ CopyrightLogo='
 # 6. Nginx 作为反向代理，开启了多worker工作模式，可使用odoo在线即时通讯
 # 7. odoo访问地址为(用你的域名代替 yourserver.com) http://yourserver.com 或者http://yourserver.com:8069
 # 8. 一个 r.sh 文件用于重启 odoo 服务，使用root用户登录后键入bash r.sh 即可执行
-# 9. 使用最新的pdf打印组件wkhtmltox 0.12.5 版本，打印更清晰
-# 10.增加python库，主要支持企业版中 ical, ldap, esc/pos，参考 https://www.odooai.cn/documentation/16.0/zh_CN/administration/install/install.html
+# 9. 使用最新的pdf打印组件wkhtmltox 0.12.6 版本，打印更清晰
+# 10.增加python库，主要支持企业版中 ical, ldap, esc/pos，参考 https://www.odooai.cn/documentation/18.0/zh_CN/administration/on_premise/packages.html
 #-----------------------------------------------
 # 如遇问题，可卸载 pg 及 odoo，重新安装
 #-----------------------------------------------
