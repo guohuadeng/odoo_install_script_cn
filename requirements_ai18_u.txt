@@ -57,7 +57,7 @@ paramiko==3.5.1
 pdfminer==20191125
 phonenumbers==9.0.1
 propcache==0.3.0
-protobuf==6.30.1
+protobuf==6.31.1
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycairo==1.28.0
