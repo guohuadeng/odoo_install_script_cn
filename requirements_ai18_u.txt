@@ -1,4 +1,4 @@
-aiohttp==3.11.14
+aiohttp==3.12.14
 alipay-sdk-python==3.7.156
 annotated-types==0.7.0
 anyio==4.9.0
