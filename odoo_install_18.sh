@@ -5,7 +5,7 @@ clear;
 
 CopyrightLogo='
 ================================================
-# 最近更新：2025-05-20
+# 最近更新：2025-07-25
 # 支持版本 Ubuntu 24.04 64位
 # 支持版本 python版本跟随操作系统，Ubuntu 20(Python3.8.10)
 # 作者: Ivan Deng
@@ -22,7 +22,7 @@ CopyrightLogo='
 # 选择3时请确保 odoo_18.0+e.latest_all.deb 已上传至当前目录
 # (2) 选择要安装的Postgresql 数据库
 # 数据库安装上，当前 ubuntu 24 默认已经是安装 Postgresql 16
-# 选择 PG14 版本将有更好性能，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
+# 选择默认 PG16 版本将有更好性能及兼容性，部份阿里云服务器无法访问最新 postgresql 官网源会导致安装失败
 # (3) 选择是否要安装Nginx
 # 安装Nginx则可直接使用80端口访问odoo，同时可使用网站即时通讯。
 # 注意，当前Nginx的配置只支持 www.* 开始的网站。如果域名为其它或者是IP，请自行更改 nginx.conf
