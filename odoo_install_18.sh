@@ -65,8 +65,8 @@ O_FONT="https://www.odooai.cn/download/microsoft.zip"
 O_PORT="8069"
 # 选择要安装的odoo版本
 O_TYPE=""
-O_VERSION="16.0"
-O_COMMUNITY_LATEST_16="http://nightly.odoocdn.com/16.0/nightly/deb/odoo_18.0.latest_all.deb"
+O_VERSION="18.0"
+O_COMMUNITY_LATEST_18="http://nightly.odoocdn.com/18.0/nightly/deb/odoo_18.0.latest_all.deb"
 # 如果要安装odoo企业版，则在此设置为 True
 IS_ENTERPRISE="False"
 # 选择要安装的pg版本
@@ -77,6 +77,11 @@ O_NGINX="False"
 O_SUPERADMIN="admin"
 # 设置 odoo 配置文件名
 O_CONFIG="${O_USER}"
+# 虚拟环境相关配置
+O_USE_VENV="False"
+O_VENV_NAME="py3v"
+O_VENV_PATH="/usr/lib"
+O_VENV_PYTHON="python3"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
 WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
 WKHTMLTOX_X32="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_i386.deb"
@@ -129,6 +134,28 @@ function ConfirmNg()
 	ConfirmNg;
 }
 
+function ConfirmVenv()
+{
+	echo -e "[Notice] Confirm Python Virtual Environment Setup: "
+	select selected in 'Use Python Virtual Environment[Yes]' 'Use System Python[No]'; do break; done;
+	[ "$selected" != '' ] &&  echo -e "[OK] You Selected: ${selected}\n" && O_USE_VENV=$selected && return 0;
+	ConfirmVenv;
+}
+
+function SetVenvConfig()
+{
+	if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+		echo -e "[Notice] Virtual Environment Configuration:"
+		read -p "Enter virtual environment name (default: py3v): " venv_name
+		O_VENV_NAME=${venv_name:-"py3v"}
+
+		read -p "Enter virtual environment path (default: /usr/lib): " venv_path
+		O_VENV_PATH=${venv_path:-"/usr/lib"}
+
+		echo -e "[OK] Virtual Environment: ${O_VENV_NAME} at ${O_VENV_PATH}\n"
+	fi;
+}
+
 function SetPassword()
 {
 	DefaultPassword=`echo -n "${IPAddress}_${RandomValue}_$(date)" | md5sum | sed "s/ .*//" | cut -b -12`;
@@ -137,9 +164,33 @@ function SetPassword()
 	echo '==========================================================================';
 }
 #--------------------------------------------------
+# 创建Python虚拟环境
+#--------------------------------------------------
+function CreateVenv()
+{
+    if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+        echo -e "\n---- Creating Python Virtual Environment ----"
+
+        # 创建虚拟环境目录
+        sudo mkdir -p $O_VENV_PATH
+        sudo chown odoo:odoo $O_VENV_PATH
+
+        # 创建虚拟环境
+        sudo -u odoo python3 -m venv $O_VENV_PATH/$O_VENV_NAME
+
+        # 激活虚拟环境并升级pip
+        sudo -u odoo $O_VENV_PATH/$O_VENV_NAME/bin/pip install --upgrade pip
+
+        # 设置pip源为国内镜像
+        sudo -u odoo $O_VENV_PATH/$O_VENV_NAME/bin/pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+        echo -e "[OK] Virtual Environment created at: $O_VENV_PATH/$O_VENV_NAME"
+    fi;
+}
+
+#--------------------------------------------------
 # 安装其它常用依赖，用odoo的deb安装已经默认安装大部分
 #--------------------------------------------------
-function InstallBase()
 {
     # 如果是 centos 执行
     # yum install apt
@@ -186,15 +237,25 @@ function InstallBase()
     sudo apt-get install ttf-wqy-* -y && sudo apt-get install ttf-wqy-zenhei -y && sudo apt-get install ttf-wqy-microhei -y
     sudo apt-get install language-pack-zh-hant language-pack-zh-hans -y
 
-    pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+    # 根据是否使用虚拟环境选择pip命令
+    if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+        PIP_CMD="$O_VENV_PATH/$O_VENV_NAME/bin/pip"
+        PYTHON_CMD="$O_VENV_PATH/$O_VENV_NAME/bin/python"
+        $PIP_CMD config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+    else
+        PIP_CMD="pip3"
+        PYTHON_CMD="python3"
+        pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+    fi
+
     # 额外的库，自行处理
     echo -e "\n--- Install Extralib Lib from requirements_ai18_u.txt"
 
     echo -e "\n--- Install Lib from Odoo 18 official list"
     # 下载 r18.txt 文件并安装
     wget -x -q $O_R_FILE -O r18.txt
-    pip3 install -r r18.txt
-    #     python3 -m pip install xxxx
+    $PIP_CMD install -r r18.txt
+    #     $PYTHON_CMD -m pip install xxxx
 
     # 设置时区，默认先不设置，因为有时是境外主机
     # sudo timedatectl set-timezone "Asia/Shanghai"
@@ -302,8 +363,8 @@ function InstallOdoo()    {
         echo -e "\n==== Installing $O_TYPE===="
     fi;
     if [ "$O_TYPE" == 'Odoo 18 Community from odoo.com 远程社区版' ]; then
-        sudo wget $O_COMMUNITY_LATEST_16 -O odoo_18.0.latest_all.deb
-        sudo gdebi --n `basename $O_COMMUNITY_LATEST`
+        sudo wget $O_COMMUNITY_LATEST_18 -O odoo_18.0.latest_all.deb
+        sudo gdebi --n `basename $O_COMMUNITY_LATEST_18`
     fi;
     if [ "$O_TYPE" == 'Odoo 18 Community from local[odoo_18.0.latest_all.deb] 本地社区版' ]; then
         sudo dpkg -i $CURDIR/odoo_18.0.latest_all.deb;sudo apt-get -f -y install
@@ -318,6 +379,33 @@ function InstallOdoo()    {
         sudo wget -x -q $O_CONF_FILE -O /etc/odoo/odoo.conf
     #    sudo wget -x -q https://www.odooai.cn/download/odoo.conf -O /etc/odoo/odoo.conf
         sudo usermod -a -G root odoo
+
+        # 如果使用虚拟环境，修改odoo.conf中的python路径
+        if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+            echo -e "\n---- Configuring Odoo for Virtual Environment ----"
+            # 备份原始配置文件
+            sudo cp /etc/odoo/odoo.conf /etc/odoo/odoo.conf.backup
+
+            # 修改配置文件中的python路径
+            sudo sed -i "s|^#.*python.*=.*|python = $O_VENV_PATH/$O_VENV_NAME/bin/python|g" /etc/odoo/odoo.conf
+            sudo sed -i "s|^python.*=.*|python = $O_VENV_PATH/$O_VENV_NAME/bin/python|g" /etc/odoo/odoo.conf
+
+            # 创建虚拟环境专用的系统服务
+            echo -e "\n---- Creating Virtual Environment System Service ----"
+
+            # 使用printf创建服务文件，避免回车符问题
+            sudo printf '[Unit]\nDescription=Odoo Open Source ERP and CRM (Virtual Environment)\nAfter=network.target postgresql.service\n\n[Service]\nType=simple\nUser=odoo\nGroup=odoo\nExecStart=%s/%s/bin/python /usr/bin/odoo -c /etc/odoo/odoo.conf\nRestart=always\nRestartSec=10\n\n[Install]\nWantedBy=multi-user.target\n' "$O_VENV_PATH" "$O_VENV_NAME" > /etc/systemd/system/odoo.service
+
+            # 重新加载systemd配置
+            sudo systemctl daemon-reload
+
+            # 启用虚拟环境服务
+            sudo systemctl enable odoo
+
+            echo -e "[OK] Odoo configured to use virtual environment Python"
+            echo -e "[OK] Virtual environment system service (odoo.service) created and enabled"
+        fi
+
         # 处理附加模块, npm
         sudo apt-get install npm -y
         sudo npm -g install npm
@@ -364,12 +452,16 @@ function InstallNg()    {
 # 设置重启脚本，完成安装
 #--------------------------------------------------
 function InstallDone()    {
-    sudo rm $CURDIR/r.sh
-    sudo touch $CURDIR/r.sh
-    sudo sh -c 'echo "#!/usr/bin/env bash" > $CURDIR/r.sh'
-    sudo sh -c 'echo "sudo systemctl restart postgresql && sudo rm /var/log/odoo/*.log && sudo systemctl restart odoo" >> $CURDIR/r.sh'
-    sudo sh -c 'echo "sudo systemctl status postgresql && sudo systemctl status odoo" >> $CURDIR/r.sh'
-    sudo chmod +x r.sh
+    sudo rm -f $CURDIR/r.sh
+
+    # 根据是否使用虚拟环境选择重启命令
+    if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+        sudo printf '#!/usr/bin/env bash\nsudo systemctl restart postgresql && sudo rm -f /var/log/odoo/*.log && sudo systemctl restart odoo\nsudo systemctl status postgresql && sudo systemctl status odoo\n' > $CURDIR/r.sh
+    else
+        sudo printf '#!/usr/bin/env bash\nsudo systemctl restart postgresql && sudo rm -f /var/log/odoo/*.log && sudo systemctl restart odoo\nsudo systemctl status postgresql && sudo systemctl status odoo\n' > $CURDIR/r.sh
+    fi
+
+    sudo chmod +x $CURDIR/r.sh
 
     echo -e "* $O_TYPE Install Done"
     echo "The Odoo server is up and running. Specifications:"
@@ -377,7 +469,17 @@ function InstallDone()    {
     echo "User service: $O_USER"
     echo "User PostgreSQL: $O_USER"
     echo "Code location: /usr/lib/python3/dist-packages/odoo"
-    echo "Restart Odoo service: sudo service $O_CONFIG restart"
+
+    if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+        echo "Python Virtual Environment: $O_VENV_PATH/$O_VENV_NAME"
+        echo "Virtual Environment Python: $O_VENV_PATH/$O_VENV_NAME/bin/python"
+    fi
+
+    if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
+        echo "Restart Odoo service: sudo systemctl restart odoo"
+    else
+        echo "Restart Odoo service: sudo service $O_CONFIG restart"
+    fi
     echo "Or: sudo bash /root/r.sh"
     echo "Please Reboot the server to make chinese setting effective."
     echo "Please visit our website to get more detail."
@@ -391,7 +493,10 @@ function InstallDone()    {
 ConfirmOdoo;
 ConfirmPg;
 ConfirmNg;
+ConfirmVenv;
+SetVenvConfig;
 InstallBase;
+CreateVenv;
 InstallPg;
 InstallOdoo;
 InstallNg;
