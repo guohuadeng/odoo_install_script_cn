@@ -79,8 +79,8 @@ O_SUPERADMIN="admin"
 O_CONFIG="${O_USER}"
 # 虚拟环境相关配置
 O_USE_VENV="False"
-O_VENV_NAME="py3v"
-O_VENV_PATH="/usr/lib"
+O_VENV_NAME="v18"
+O_VENV_PATH="/usr/lib/py3v"
 O_VENV_PYTHON="python3"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
 WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
@@ -146,11 +146,11 @@ function SetVenvConfig()
 {
 	if [ "$O_USE_VENV" == 'Use Python Virtual Environment[Yes]' ]; then
 		echo -e "[Notice] Virtual Environment Configuration:"
-		read -p "Enter virtual environment name (default: py3v): " venv_name
-		O_VENV_NAME=${venv_name:-"py3v"}
+		read -p "Enter virtual environment name (default: v18): " venv_name
+		O_VENV_NAME=${venv_name:-"v18"}
 
-		read -p "Enter virtual environment path (default: /usr/lib): " venv_path
-		O_VENV_PATH=${venv_path:-"/usr/lib"}
+		read -p "Enter virtual environment path (default: /usr/lib/py3v): " venv_path
+		O_VENV_PATH=${venv_path:-"/usr/lib/py3v"}
 
 		echo -e "[OK] Virtual Environment: ${O_VENV_NAME} at ${O_VENV_PATH}\n"
 	fi;
@@ -176,7 +176,7 @@ function CreateVenv()
         sudo chown odoo:odoo $O_VENV_PATH
 
         # 创建虚拟环境
-        sudo -u odoo python3 -m venv $O_VENV_PATH/$O_VENV_NAME
+        sudo -u odoo python3 -m venv --system-site-packages $O_VENV_PATH/$O_VENV_NAME
 
         # 激活虚拟环境并升级pip
         sudo -u odoo $O_VENV_PATH/$O_VENV_NAME/bin/pip install --upgrade pip
