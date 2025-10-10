@@ -72,7 +72,7 @@ pysam==0.23.0
 python-barcode==0.15.1
 python-docx==1.1.2
 python-gemini-api==2.4.12
-python-ldap==3.4.4
+python-ldap==3.4.5
 python-Levenshtein==0.27.1
 PyYAML==6.0.2
 RapidFuzz==3.12.2
