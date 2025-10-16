@@ -83,8 +83,8 @@ O_VENV_NAME="v18"
 O_VENV_PATH="/usr/lib/py3v"
 O_VENV_PYTHON="python3"
 # WKHTMLTOPDF 下载链接，使用https后停用cdn，注意主机版本及 WKHTMLTOPDF的版本
-WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
-WKHTMLTOX_X32="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_i386.deb"
+WKHTMLTOX_X64="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.deb"
+WKHTMLTOX_X32="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bullseye_i386.deb"
 # LibPng处理，主要是 U18的bug
 LIBPNG_X64="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb"
 LIBPNG_X32="https://www.odooai.cn/download/libpng12-0_1.2.54-1ubuntu1.1_i386.deb"
@@ -294,10 +294,20 @@ function CreateVenv()
     if [ $INSTALL_WKHTMLTOPDF = "True" ]; then
       echo -e "\n---- Install wkhtml and place shortcuts on correct place for ODOO ----"
       sudo apt-get install xvfb -y
-      sudo apt-get install wkhtmltopdf -y
 
-#      sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
-#      sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
+      #apt 安装模式 wkhtmltopdf 有时有问题，要直接 deb
+      #pick up correct one from x64 & x32 versions:
+      if [ "`getconf LONG_BIT`" == "64" ];then
+          _url=$WKHTMLTOX_X64
+      else
+          _url=$WKHTMLTOX_X32
+      fi
+      sudo wget $_url
+      sudo gdebi --n `basename $_url`
+#      sudo dpkg -i wkhtmltox_0.12.6.1-3.jammy_amd64.deb
+#      sudo apt-get -f -y install
+      sudo ln -f -s /usr/local/bin/wkhtmltopdf /usr/bin
+      sudo ln -f -s /usr/local/bin/wkhtmltoimage /usr/bin
     else
       echo "Wkhtmltopdf isn't installed due to the choice of the user!"
     fi
