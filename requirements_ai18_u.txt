@@ -66,7 +66,7 @@ pycryptodome==3.22.0
 pycryptodomex==3.22.0
 pydantic==2.10.6
 pydantic_core==2.27.2
-PyNaCl==1.5.0
+PyNaCl==1.6.2
 pyparsing==3.2.2
 pysam==0.23.0
 python-barcode==0.15.1
